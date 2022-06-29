@@ -3,5 +3,8 @@
   "version": "0.1.0",
   "keywords": [],
   "author": "Gabriel Belther Santos",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "git-commit-msg-linter": "^4.1.3"
+  }
 }
