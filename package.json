@@ -5,6 +5,8 @@
   "author": "Gabriel Belther Santos",
   "license": "ISC",
   "devDependencies": {
-    "git-commit-msg-linter": "^4.1.3"
+    "@types/node": "^18.0.0",
+    "git-commit-msg-linter": "^4.1.3",
+    "typescript": "^4.7.4"
   }
 }
