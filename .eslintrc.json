@@ -9,6 +9,7 @@
     "airbnb-typescript",
     "prettier"
   ],
+  "ignorePatterns": ["**/*.config.js"],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaFeatures": {
@@ -20,6 +21,8 @@
   },
   "plugins": ["react", "@typescript-eslint"],
   "rules": {
-    "no-console": "warn"
+    "no-console": "warn",
+    "class-methods-use-this": "off",
+    "import/prefer-default-export": "off"
   }
 }
