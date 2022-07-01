@@ -1,18 +1,5 @@
 import axios from 'axios';
-
-export type HttpRequest = {
-  url: string;
-  method: string;
-};
-
-export type HttpResponse = {
-  data: any;
-  status: number;
-};
-
-interface HttpClient {
-  request: (data: HttpRequest) => Promise<HttpResponse>;
-}
+import { HttpRequest, HttpResponse, HttpClient } from '@/data/contracts';
 
 export class AxiosHttpClient implements HttpClient {
   async request(data: HttpRequest): Promise<HttpResponse> {
