@@ -27,4 +27,18 @@ describe('AxiosHttpClient', () => {
     await sut.request(requestParams);
     expect(mockedAxios.request).toHaveBeenCalledWith(requestParams);
   });
+
+  it('should return the correct value', async () => {
+    mockedAxios.request.mockResolvedValue({ data: 'any_data', status: 123 });
+    const { sut } = makeSut();
+    const requestParams = {
+      url: faker.internet.url(),
+      method: faker.internet.httpMethod(),
+    };
+    const httpResponse = await sut.request(requestParams);
+    expect(httpResponse).toEqual({
+      data: 'any_data',
+      status: 123,
+    });
+  });
 });
