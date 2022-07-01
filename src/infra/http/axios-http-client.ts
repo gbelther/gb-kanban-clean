@@ -1,11 +1,11 @@
 import axios from 'axios';
 
-type HttpRequest = {
+export type HttpRequest = {
   url: string;
   method: string;
 };
 
-type HttpResponse = {
+export type HttpResponse = {
   data: any;
   status: number;
 };
