@@ -13,7 +13,7 @@ export type HttpRequest = {
 
 export type HttpResponse<T = any> = {
   data: T;
-  status: HttpStatusCode;
+  statusCode: HttpStatusCode;
 };
 
 export interface HttpClient {

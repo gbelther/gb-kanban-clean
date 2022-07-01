@@ -12,7 +12,7 @@ const makeHttpRequest = (): HttpRequest => ({
 
 const makeHttpResponse = (): HttpResponse => ({
   data: JSON.parse(faker.datatype.json()),
-  status: faker.internet.httpStatusCode(),
+  statusCode: faker.internet.httpStatusCode(),
 });
 
 const mockAxios = () => {

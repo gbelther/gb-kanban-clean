@@ -10,12 +10,12 @@ export class AxiosHttpClient implements HttpClient {
       });
       return {
         data: axiosResponse.data,
-        status: axiosResponse.status,
+        statusCode: axiosResponse.status,
       };
     } catch (error) {
       return {
         data: error.response.data,
-        status: error.response.status,
+        statusCode: error.response.status,
       };
     }
   }
