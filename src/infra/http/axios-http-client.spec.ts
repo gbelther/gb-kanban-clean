@@ -54,4 +54,13 @@ describe('AxiosHttpClient', () => {
       status: axiosResponse.status,
     });
   });
+
+  it('should throw with correct error', async () => {
+    const mockedAxios = mockAxios();
+    mockedAxios.request.mockRejectedValueOnce({ response: makeHttpResponse() });
+    const { sut } = makeSut();
+    const httpResponsePromise = sut.request(makeHttpRequest());
+    const axiosResponse = mockedAxios.request.mock.results[0].value;
+    expect(httpResponsePromise).toEqual(axiosResponse);
+  });
 });
