@@ -1,4 +1,4 @@
-import { InvalidCredentialsError } from '@/domain/errors';
+import { InvalidCredentialsError, UnexpectedError } from '@/domain/errors';
 import { Authentication } from '@/domain/usecases';
 import { HttpClient, HttpStatusCode } from '../contracts';
 
@@ -17,6 +17,8 @@ export class RemoteAuthentication implements Authentication {
     switch (httpResponse.statusCode) {
       case HttpStatusCode.unauthorized:
         throw new InvalidCredentialsError();
+      case HttpStatusCode.badRequest:
+        throw new UnexpectedError();
       default:
         return null;
     }
