@@ -9,6 +9,21 @@ import {
 import { RemoteAuthentication } from './remote-authentication';
 import { InvalidCredentialsError, UnexpectedError } from '@/domain/errors';
 
+const makeAuthParams = (): Authentication.Params => ({
+  email: faker.internet.email(),
+  password: faker.internet.password(),
+});
+
+const makeAccountModel = (): Authentication.Model => ({
+  accessToken: faker.datatype.uuid(),
+  refreshToken: faker.datatype.uuid(),
+  user: {
+    id: faker.datatype.uuid(),
+    name: faker.name.findName(),
+    email: faker.internet.email(),
+  },
+});
+
 class HttpClientSpy implements HttpClient {
   url: string;
 
@@ -16,21 +31,19 @@ class HttpClientSpy implements HttpClient {
 
   body: any;
 
+  response: HttpResponse = {
+    statusCode: 200,
+    data: JSON.parse(faker.datatype.json()),
+  };
+
   async request(data: HttpRequest): Promise<HttpResponse<any>> {
     this.url = data.url;
     this.method = data.method;
     this.body = data.body;
-    return {
-      statusCode: 200,
-      data: JSON.parse(faker.datatype.json()),
-    };
+
+    return this.response;
   }
 }
-
-const makeAuthParams = (): Authentication.Params => ({
-  email: faker.internet.email(),
-  password: faker.internet.password(),
-});
 
 type SutTypes = {
   sut: RemoteAuthentication;
@@ -75,5 +88,16 @@ describe('RemoteAuthentication', () => {
     }));
     const authPromise = sut.auth(makeAuthParams());
     await expect(authPromise).rejects.toThrow(new UnexpectedError());
+  });
+
+  it('should return an account if HttpClient returns 200', async () => {
+    const { sut, httpClientSpy } = makeSut();
+    const accountModel = makeAccountModel();
+    httpClientSpy.response = {
+      statusCode: HttpStatusCode.success,
+      data: accountModel,
+    };
+    const account = await sut.auth(makeAuthParams());
+    expect(account).toEqual(accountModel);
   });
 });
