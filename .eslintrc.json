@@ -9,7 +9,7 @@
     "airbnb-typescript",
     "prettier"
   ],
-  "ignorePatterns": ["**/*.config.js"],
+  "ignorePatterns": ["**/*.config.js", "**/*.common.js", "**/*.dev.js"],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaFeatures": {
