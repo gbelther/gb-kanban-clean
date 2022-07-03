@@ -8,6 +8,7 @@ jest.mock('axios');
 const makeHttpRequest = (): HttpRequest => ({
   url: faker.internet.url(),
   method: faker.internet.httpMethod(),
+  body: JSON.parse(faker.datatype.json()),
 });
 
 const makeHttpResponse = (): HttpResponse => ({
@@ -40,7 +41,11 @@ describe('AxiosHttpClient', () => {
     const { sut, mockedAxios } = makeSut();
     const requestParams = makeHttpRequest();
     await sut.request(requestParams);
-    expect(mockedAxios.request).toHaveBeenCalledWith(requestParams);
+    expect(mockedAxios.request).toHaveBeenCalledWith({
+      url: requestParams.url,
+      method: requestParams.method,
+      data: requestParams.body,
+    });
   });
 
   it('should return the correct value', async () => {
