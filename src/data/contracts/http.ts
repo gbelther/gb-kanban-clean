@@ -9,6 +9,7 @@ export enum HttpStatusCode {
 export type HttpRequest = {
   url: string;
   method: HttpMethod;
+  body: any;
 };
 
 export type HttpResponse<T = any> = {
@@ -16,6 +17,6 @@ export type HttpResponse<T = any> = {
   statusCode: HttpStatusCode;
 };
 
-export interface HttpClient {
-  request: (data: HttpRequest) => Promise<HttpResponse>;
+export interface HttpClient<T = any> {
+  request: (data: HttpRequest) => Promise<HttpResponse<T>>;
 }

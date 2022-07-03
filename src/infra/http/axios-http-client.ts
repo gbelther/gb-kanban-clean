@@ -7,6 +7,7 @@ export class AxiosHttpClient implements HttpClient {
       const axiosResponse = await axios.request({
         url: data.url,
         method: data.method,
+        data: data.body,
       });
       return {
         data: axiosResponse.data,
