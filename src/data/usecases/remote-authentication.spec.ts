@@ -2,7 +2,7 @@ import { faker } from '@faker-js/faker';
 import { Authentication } from '@/domain/usecases';
 import { HttpClient, HttpRequest, HttpResponse } from '../contracts';
 import { RemoteAuthentication } from './remote-authentication';
-import { InvalidCredentialsError } from '@/domain/errors';
+import { InvalidCredentialsError, UnexpectedError } from '@/domain/errors';
 
 class HttpClientSpy implements HttpClient {
   url: string;
@@ -59,5 +59,14 @@ describe('RemoteAuthentication', () => {
       .mockRejectedValueOnce(new InvalidCredentialsError());
     const authPromise = sut.auth(makeAuthParams());
     await expect(authPromise).rejects.toThrow(new InvalidCredentialsError());
+  });
+
+  it('should throw UnexpectedError if HttpClient returns 400', async () => {
+    const { sut, httpClientSpy } = makeSut();
+    jest
+      .spyOn(httpClientSpy, 'request')
+      .mockRejectedValueOnce(new UnexpectedError());
+    const authPromise = sut.auth(makeAuthParams());
+    await expect(authPromise).rejects.toThrow(new UnexpectedError());
   });
 });
