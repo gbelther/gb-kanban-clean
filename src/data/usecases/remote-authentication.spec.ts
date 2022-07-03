@@ -80,7 +80,7 @@ describe('RemoteAuthentication', () => {
     await expect(authPromise).rejects.toThrow(new InvalidCredentialsError());
   });
 
-  it('should throw UnexpectedError if HttpClient returns 400', async () => {
+  it('should throw UnexpectedError if HttpClient any statusCode not equal 401 and 200', async () => {
     const { sut, httpClientSpy } = makeSut();
     jest.spyOn(httpClientSpy, 'request').mockImplementationOnce(async () => ({
       statusCode: HttpStatusCode.badRequest,
