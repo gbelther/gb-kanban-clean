@@ -26,9 +26,7 @@ const makeAccountModel = (): Authentication.Model => ({
 
 class HttpClientSpy implements HttpClient {
   url: string;
-
   method: string;
-
   body: any;
 
   response: HttpResponse = {
