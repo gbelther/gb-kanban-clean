@@ -1,6 +1,11 @@
 import { faker } from '@faker-js/faker';
 import { Authentication } from '@/domain/usecases';
-import { HttpClient, HttpRequest, HttpResponse } from '../contracts';
+import {
+  HttpClient,
+  HttpRequest,
+  HttpResponse,
+  HttpStatusCode,
+} from '../contracts';
 import { RemoteAuthentication } from './remote-authentication';
 import { InvalidCredentialsError, UnexpectedError } from '@/domain/errors';
 
@@ -54,18 +59,20 @@ describe('RemoteAuthentication', () => {
 
   it('should throw InvalidCredentialsError if HttpClient returns 401', async () => {
     const { sut, httpClientSpy } = makeSut();
-    jest
-      .spyOn(httpClientSpy, 'request')
-      .mockRejectedValueOnce(new InvalidCredentialsError());
+    jest.spyOn(httpClientSpy, 'request').mockImplementationOnce(async () => ({
+      statusCode: HttpStatusCode.unauthorized,
+      data: faker.random.words(),
+    }));
     const authPromise = sut.auth(makeAuthParams());
     await expect(authPromise).rejects.toThrow(new InvalidCredentialsError());
   });
 
   it('should throw UnexpectedError if HttpClient returns 400', async () => {
     const { sut, httpClientSpy } = makeSut();
-    jest
-      .spyOn(httpClientSpy, 'request')
-      .mockRejectedValueOnce(new UnexpectedError());
+    jest.spyOn(httpClientSpy, 'request').mockImplementationOnce(async () => ({
+      statusCode: HttpStatusCode.badRequest,
+      data: faker.random.words(),
+    }));
     const authPromise = sut.auth(makeAuthParams());
     await expect(authPromise).rejects.toThrow(new UnexpectedError());
   });
