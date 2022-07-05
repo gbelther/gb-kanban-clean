@@ -18,4 +18,11 @@ describe('EmailValidator', () => {
     const error = sut.validate({ [field]: '' });
     expect(error).toBeFalsy();
   });
+
+  it('should return falsy if field is a valid email', () => {
+    const field = faker.database.column();
+    const sut = makeSut(field);
+    const error = sut.validate({ [field]: faker.internet.email() });
+    expect(error).toBeFalsy();
+  });
 });
