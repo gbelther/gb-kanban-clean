@@ -11,4 +11,11 @@ describe('EmailValidator', () => {
     const error = sut.validate({ [field]: faker.random.word() });
     expect(error).toEqual(new InvalidFieldError());
   });
+
+  it('should return falsy if field is empty', () => {
+    const field = faker.database.column();
+    const sut = makeSut(field);
+    const error = sut.validate({ [field]: '' });
+    expect(error).toBeFalsy();
+  });
 });
