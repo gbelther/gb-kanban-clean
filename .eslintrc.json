@@ -27,6 +27,7 @@
     "import/extensions": ["error", "never"],
     "@typescript-eslint/lines-between-class-members": "off",
     "react/react-in-jsx-scope": "off",
-    "import/no-extraneous-dependencies": "off"
+    "import/no-extraneous-dependencies": "off",
+    "no-restricted-syntax": "off"
   }
 }
