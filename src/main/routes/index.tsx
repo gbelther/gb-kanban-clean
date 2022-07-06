@@ -3,13 +3,14 @@ import {
   Routes as RoutesContainer,
   Route,
 } from 'react-router-dom';
-import { Login } from '@/presentation/pages/login';
+
+import { makeLogin } from '../factories/pages';
 
 export function Router() {
   return (
     <BrowserRouter>
       <RoutesContainer>
-        <Route path="/login" element={<Login />} />
+        <Route path="/login" element={makeLogin()} />
       </RoutesContainer>
     </BrowserRouter>
   );
