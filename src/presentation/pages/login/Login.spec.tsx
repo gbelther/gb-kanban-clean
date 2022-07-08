@@ -14,4 +14,12 @@ describe('<Login />', () => {
       '',
     );
   });
+
+  it('password input should start with correct value', () => {
+    makeSut();
+    expect(screen.getByTestId('login-input-password')).toHaveAttribute(
+      'value',
+      '',
+    );
+  });
 });
