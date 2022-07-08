@@ -7,6 +7,11 @@ export function Login() {
     email: '',
     password: '',
   });
+  const [loginFormErrors] = useState({
+    email: '',
+    password: '',
+    general: '',
+  });
 
   const handleLoginValuesChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
@@ -45,7 +50,11 @@ export function Login() {
                 <Sty.Spinner />
               </Sty.SpinnerWrap>
             )}
-            <Sty.FeedbackMessage>Error</Sty.FeedbackMessage>
+            {loginFormErrors.general && (
+              <Sty.FeedbackMessage data-testid="login-error-message">
+                {loginFormErrors.general}
+              </Sty.FeedbackMessage>
+            )}
           </Sty.Feedback>
           <Sty.Actions>
             <Sty.Button>Entrar</Sty.Button>
