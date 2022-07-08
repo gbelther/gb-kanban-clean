@@ -22,4 +22,9 @@ describe('<Login />', () => {
       '',
     );
   });
+
+  it('should not show spinner when render page', () => {
+    makeSut();
+    expect(screen.queryByTestId('login-spinner')).toBeFalsy();
+  });
 });
