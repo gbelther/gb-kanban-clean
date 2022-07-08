@@ -2,6 +2,7 @@ import { ChangeEvent, useState } from 'react';
 import * as Sty from './styles';
 
 export function Login() {
+  const [loadingSubmit] = useState(false);
   const [loginFormValues, setLoginFormValues] = useState({
     email: '',
     password: '',
@@ -39,9 +40,11 @@ export function Login() {
             />
           </Sty.Inputs>
           <Sty.Feedback>
-            <Sty.SpinnerWrap>
-              <Sty.Spinner />
-            </Sty.SpinnerWrap>
+            {loadingSubmit && (
+              <Sty.SpinnerWrap data-testid="login-input-password">
+                <Sty.Spinner />
+              </Sty.SpinnerWrap>
+            )}
             <Sty.FeedbackMessage>Error</Sty.FeedbackMessage>
           </Sty.Feedback>
           <Sty.Actions>
