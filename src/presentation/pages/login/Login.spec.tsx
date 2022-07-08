@@ -32,4 +32,9 @@ describe('<Login />', () => {
     makeSut();
     expect(screen.queryByTestId('login-error-message')).toBeFalsy();
   });
+
+  it('should render button disabled if any input value is empty', () => {
+    makeSut();
+    expect(screen.queryByTestId('login-submit-button')).toBeDisabled();
+  });
 });
