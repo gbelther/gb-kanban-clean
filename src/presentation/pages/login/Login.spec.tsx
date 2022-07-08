@@ -1,3 +1,4 @@
+/* eslint-disable max-classes-per-file */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import userEvent from '@testing-library/user-event';
 import { fireEvent, screen, waitFor } from '@testing-library/react';
@@ -5,6 +6,18 @@ import { faker } from '@faker-js/faker';
 import { renderTheme } from '@/main/config/tests/renderTheme';
 import { Login } from '.';
 import { Validation } from '@/presentation/contracts';
+import { Authentication } from '@/domain/usecases';
+import { AccountModel } from '@/domain/models';
+
+const makeAuthenticationModel = (): Authentication.Model => ({
+  accessToken: faker.datatype.uuid(),
+  refreshToken: faker.datatype.uuid(),
+  user: {
+    id: faker.datatype.uuid(),
+    name: faker.name.findName(),
+    email: faker.internet.email(),
+  },
+});
 
 class ValidationStub implements Validation {
   validate(fieldName: string, input: object): string {
@@ -12,15 +25,30 @@ class ValidationStub implements Validation {
   }
 }
 
+class AuthenticationSpy implements Authentication {
+  account = makeAuthenticationModel();
+  params: Authentication.Params;
+
+  async auth(params: Authentication.Params): Promise<AccountModel> {
+    this.params = params;
+    return this.account;
+  }
+}
+
 type SutTypes = {
   validationStub: ValidationStub;
+  authenticationSpy: AuthenticationSpy;
 };
 
 const makeSut = (): SutTypes => {
   const validationStub = new ValidationStub();
-  renderTheme(<Login validation={validationStub} />);
+  const authenticationSpy = new AuthenticationSpy();
+  renderTheme(
+    <Login validation={validationStub} authentication={authenticationSpy} />,
+  );
   return {
     validationStub,
+    authenticationSpy,
   };
 };
 
@@ -79,5 +107,21 @@ describe('<Login />', () => {
     userEvent.type(inputPassword, faker.internet.password());
     fireEvent.submit(screen.getByTestId('login-form'));
     expect(screen.queryByText(errorMessage)).toBeTruthy();
+  });
+
+  it('should call Authentication with correct values', async () => {
+    const { authenticationSpy } = makeSut();
+    const email = faker.random.word();
+    const password = faker.internet.password();
+    const inputEmail = screen.getByTestId('login-input-email');
+    userEvent.type(inputEmail, email);
+    const inputPassword = screen.getByTestId('login-input-password');
+    userEvent.type(inputPassword, password);
+    fireEvent.submit(screen.getByTestId('login-form'));
+    await authenticationSpy.auth({ email, password });
+    expect(authenticationSpy.params).toEqual({
+      email,
+      password,
+    });
   });
 });
