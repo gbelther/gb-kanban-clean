@@ -27,4 +27,9 @@ describe('<Login />', () => {
     makeSut();
     expect(screen.queryByTestId('login-spinner')).toBeFalsy();
   });
+
+  it('should not show error message when render page', () => {
+    makeSut();
+    expect(screen.queryByTestId('login-error-message')).toBeFalsy();
+  });
 });
