@@ -30,6 +30,7 @@ export function Login() {
               onChange={handleLoginValuesChange}
             />
             <Sty.Input
+              data-testid="login-input-password"
               type="password"
               placeholder="Digite sua senha"
               name="password"
