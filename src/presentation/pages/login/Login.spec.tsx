@@ -1,4 +1,6 @@
-import { screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { screen, waitFor } from '@testing-library/react';
+import { faker } from '@faker-js/faker';
 import { renderTheme } from '@/main/config/tests/renderTheme';
 import { Login } from '.';
 
@@ -36,5 +38,16 @@ describe('<Login />', () => {
   it('should render button disabled if any input value is empty', () => {
     makeSut();
     expect(screen.queryByTestId('login-submit-button')).toBeDisabled();
+  });
+
+  it('should render button enabled if both inputs values is not empty', async () => {
+    makeSut();
+    const inputEmail = screen.getByTestId('login-input-email');
+    userEvent.type(inputEmail, faker.internet.email());
+    const inputPassword = screen.getByTestId('login-input-password');
+    userEvent.type(inputPassword, faker.internet.password());
+    await waitFor(() => {
+      expect(screen.queryByTestId('login-submit-button')).toBeEnabled();
+    });
   });
 });
