@@ -50,12 +50,22 @@ export const Inputs = styled(GridColumn)`
   width: 100%;
 `;
 
+export const InputBox = styled.div`
+  display: grid;
+  grid-template-rows: 1fr auto;
+`;
+
 export const Input = styled.input`
   font-size: 1rem;
   border: none;
   border-radius: 4px;
   outline: none;
   padding: 0.25rem 0.5rem;
+`;
+
+export const ErrorMessage = styled.label`
+  font-size: 0.875rem;
+  color: ${({ theme }) => theme.colors.errorLight};
 `;
 
 export const Actions = styled(GridColumn)`

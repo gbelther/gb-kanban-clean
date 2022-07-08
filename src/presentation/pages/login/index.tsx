@@ -1,17 +1,33 @@
-import { ChangeEvent, useMemo, useState } from 'react';
+import { ChangeEvent, FormEvent, useMemo, useState } from 'react';
+import { Validation } from '@/presentation/contracts';
 import * as Sty from './styles';
 
-export function Login() {
+type LoginProps = {
+  validation: Validation;
+};
+
+const loginFormErrorsInitial = {
+  email: '',
+  password: '',
+  general: '',
+};
+
+export function Login({ validation }: LoginProps) {
   const [loadingSubmit] = useState(false);
   const [loginFormValues, setLoginFormValues] = useState({
     email: '',
     password: '',
   });
-  const [loginFormErrors] = useState({
-    email: '',
-    password: '',
-    general: '',
-  });
+  const [loginFormErrors, setLoginFormErrors] = useState(
+    loginFormErrorsInitial,
+  );
+
+  const validate = (fieldName: string): boolean => {
+    const error = validation.validate(fieldName, loginFormValues);
+    if (error)
+      setLoginFormErrors(prevState => ({ ...prevState, [fieldName]: error }));
+    return !error;
+  };
 
   const handleLoginValuesChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
@@ -19,6 +35,21 @@ export function Login() {
       ...prevState,
       [name]: value,
     }));
+  };
+
+  const handleLoginSubmit = (event: FormEvent) => {
+    event.preventDefault();
+
+    const emailIsValid = validate('email');
+    const passwordIsValid = validate('password');
+
+    if (!emailIsValid || !passwordIsValid) {
+      return;
+    }
+
+    setLoginFormErrors(loginFormErrorsInitial);
+
+    console.log('REQ');
   };
 
   const buttonSubmitIsDisabled = useMemo(
@@ -30,24 +61,35 @@ export function Login() {
     <Sty.Container>
       <Sty.LoginBox>
         <Sty.Title>Faça login</Sty.Title>
-        <Sty.Form>
+        <Sty.Form
+          data-testid="login-form"
+          noValidate
+          onSubmit={handleLoginSubmit}
+        >
           <Sty.Inputs>
-            <Sty.Input
-              data-testid="login-input-email"
-              type="email"
-              placeholder="Digite seu E-mail"
-              name="email"
-              value={loginFormValues.email}
-              onChange={handleLoginValuesChange}
-            />
-            <Sty.Input
-              data-testid="login-input-password"
-              type="password"
-              placeholder="Digite sua senha"
-              name="password"
-              value={loginFormValues.password}
-              onChange={handleLoginValuesChange}
-            />
+            <Sty.InputBox>
+              <Sty.Input
+                data-testid="login-input-email"
+                type="email"
+                placeholder="Digite seu E-mail"
+                name="email"
+                value={loginFormValues.email}
+                onChange={handleLoginValuesChange}
+              />
+              {loginFormErrors.email && (
+                <Sty.ErrorMessage>{loginFormErrors.email}</Sty.ErrorMessage>
+              )}
+            </Sty.InputBox>
+            <Sty.InputBox>
+              <Sty.Input
+                data-testid="login-input-password"
+                type="password"
+                placeholder="Digite sua senha"
+                name="password"
+                value={loginFormValues.password}
+                onChange={handleLoginValuesChange}
+              />
+            </Sty.InputBox>
           </Sty.Inputs>
           <Sty.Feedback>
             {loadingSubmit && (
