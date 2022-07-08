@@ -1,4 +1,4 @@
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, useMemo, useState } from 'react';
 import * as Sty from './styles';
 
 export function Login() {
@@ -20,6 +20,11 @@ export function Login() {
       [name]: value,
     }));
   };
+
+  const buttonSubmitIsDisabled = useMemo(
+    () => !loginFormValues.email || !loginFormValues.password,
+    [loginFormValues],
+  );
 
   return (
     <Sty.Container>
@@ -57,7 +62,13 @@ export function Login() {
             )}
           </Sty.Feedback>
           <Sty.Actions>
-            <Sty.Button>Entrar</Sty.Button>
+            <Sty.Button
+              data-testid="login-submit-button"
+              type="submit"
+              disabled={buttonSubmitIsDisabled}
+            >
+              Entrar
+            </Sty.Button>
           </Sty.Actions>
         </Sty.Form>
       </Sty.LoginBox>
