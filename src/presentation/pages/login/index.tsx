@@ -22,6 +22,7 @@ export function Login() {
         <Sty.Form>
           <Sty.Inputs>
             <Sty.Input
+              data-testid="login-input-email"
               type="email"
               placeholder="Digite seu E-mail"
               name="email"
