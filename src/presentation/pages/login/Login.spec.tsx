@@ -1,11 +1,27 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import userEvent from '@testing-library/user-event';
-import { screen, waitFor } from '@testing-library/react';
+import { fireEvent, screen, waitFor } from '@testing-library/react';
 import { faker } from '@faker-js/faker';
 import { renderTheme } from '@/main/config/tests/renderTheme';
 import { Login } from '.';
+import { Validation } from '@/presentation/contracts';
 
-const makeSut = (): void => {
-  renderTheme(<Login />);
+class ValidationStub implements Validation {
+  validate(fieldName: string, input: object): string {
+    return null;
+  }
+}
+
+type SutTypes = {
+  validationStub: ValidationStub;
+};
+
+const makeSut = (): SutTypes => {
+  const validationStub = new ValidationStub();
+  renderTheme(<Login validation={validationStub} />);
+  return {
+    validationStub,
+  };
 };
 
 describe('<Login />', () => {
@@ -49,5 +65,19 @@ describe('<Login />', () => {
     await waitFor(() => {
       expect(screen.queryByTestId('login-submit-button')).toBeEnabled();
     });
+  });
+
+  it('should show email error validation is validation fails', async () => {
+    const { validationStub } = makeSut();
+    const errorMessage = faker.random.words();
+    jest
+      .spyOn(validationStub, 'validate')
+      .mockImplementationOnce(() => errorMessage);
+    const inputEmail = screen.getByTestId('login-input-email');
+    userEvent.type(inputEmail, faker.random.word());
+    const inputPassword = screen.getByTestId('login-input-password');
+    userEvent.type(inputPassword, faker.internet.password());
+    fireEvent.submit(screen.getByTestId('login-form'));
+    expect(screen.queryByText(errorMessage)).toBeTruthy();
   });
 });
