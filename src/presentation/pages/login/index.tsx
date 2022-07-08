@@ -1,9 +1,11 @@
 import { ChangeEvent, FormEvent, useMemo, useState } from 'react';
 import { Validation } from '@/presentation/contracts';
+import { Authentication } from '@/domain/usecases';
 import * as Sty from './styles';
 
 type LoginProps = {
   validation: Validation;
+  authentication: Authentication;
 };
 
 const loginFormErrorsInitial = {
@@ -12,7 +14,7 @@ const loginFormErrorsInitial = {
   general: '',
 };
 
-export function Login({ validation }: LoginProps) {
+export function Login({ validation, authentication }: LoginProps) {
   const [loadingSubmit] = useState(false);
   const [loginFormValues, setLoginFormValues] = useState({
     email: '',
@@ -37,7 +39,7 @@ export function Login({ validation }: LoginProps) {
     }));
   };
 
-  const handleLoginSubmit = (event: FormEvent) => {
+  const handleLoginSubmit = async (event: FormEvent) => {
     event.preventDefault();
 
     const emailIsValid = validate('email');
@@ -49,7 +51,14 @@ export function Login({ validation }: LoginProps) {
 
     setLoginFormErrors(loginFormErrorsInitial);
 
-    console.log('REQ');
+    try {
+      await authentication.auth({
+        email: loginFormValues.email,
+        password: loginFormValues.password,
+      });
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const buttonSubmitIsDisabled = useMemo(

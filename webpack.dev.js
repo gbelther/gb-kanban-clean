@@ -1,5 +1,6 @@
 const { merge } = require('webpack-merge');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const { DefinePlugin } = require('webpack');
 const webpackCommon = require('./webpack.common');
 
 module.exports = merge(webpackCommon, {
@@ -26,5 +27,8 @@ module.exports = merge(webpackCommon, {
   },
   plugins: [
     new HtmlWebpackPlugin({ template: './templates/template.dev.html' }),
+    new DefinePlugin({
+      'process.env.API_URL': JSON.stringify(''),
+    }),
   ],
 });
