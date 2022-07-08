@@ -14,6 +14,9 @@ export const GlobalStyles = createGlobalStyle`
     @media (max-width: 720px) {
       font-size: 87.5%;
     }
+
+    background-color: ${({ theme }) => theme.colors.dark01};
+    color: ${({ theme }) => theme.colors.light01};
   }
  
   button {
@@ -27,6 +30,7 @@ export const GlobalStyles = createGlobalStyle`
 
   a {
     color: inherit;
+    cursor: pointer;
     text-decoration: none;
   }
 
