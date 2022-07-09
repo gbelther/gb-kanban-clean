@@ -1,5 +1,11 @@
 import { faker } from '@faker-js/faker';
-import { HttpClient, HttpRequest, HttpResponse } from '../contracts/http';
+import { AccessDeniedError } from '@/domain/errors';
+import {
+  HttpClient,
+  HttpRequest,
+  HttpResponse,
+  HttpStatusCode,
+} from '../contracts/http';
 import { RemoteLoadTaskList } from './remote-load-task-list';
 
 class HttpClientSpy implements HttpClient {
@@ -47,5 +53,14 @@ describe('RemoteLoadTaskList', () => {
     const { sut, httpClientSpy } = makeSut(url);
     await sut.loadAll();
     expect(httpClientSpy.url).toBe(url);
+  });
+
+  it('should throw AccessDeniedError if HttpClient returns 403', async () => {
+    const { sut, httpClientSpy } = makeSut();
+    httpClientSpy.response = {
+      statusCode: HttpStatusCode.forbidden,
+    };
+    const loadAllPromise = sut.loadAll();
+    await expect(loadAllPromise).rejects.toThrow(new AccessDeniedError());
   });
 });
