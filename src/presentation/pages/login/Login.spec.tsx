@@ -7,6 +7,7 @@ import { Login } from '.';
 import { Validation } from '@/presentation/contracts';
 import { Authentication } from '@/domain/usecases';
 import { AccountModel } from '@/domain/models';
+import { InvalidCredentialsError } from '@/domain/errors';
 
 const makeAuthenticationModel = (): Authentication.Model => ({
   accessToken: faker.datatype.uuid(),
@@ -144,5 +145,15 @@ describe('<Login />', () => {
     await simulateValidSubmit();
     await simulateSubmit();
     expect(authenticationSpy.callsCount).toBe(1);
+  });
+
+  it('should show error if Authentication fails', async () => {
+    const { authenticationSpy } = makeSut();
+    const error = new InvalidCredentialsError();
+    jest.spyOn(authenticationSpy, 'auth').mockRejectedValueOnce(error);
+    await waitFor(async () => {
+      simulateValidSubmit();
+      expect(await screen.findByText(error.message)).toBeTruthy();
+    });
   });
 });
