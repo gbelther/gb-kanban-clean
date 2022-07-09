@@ -16,6 +16,8 @@ export class RemoteLoadTaskList implements LoadTaskList {
     switch (httpResponse.statusCode) {
       case HttpStatusCode.success:
         return httpResponse.data || ([] as LoadTaskList.Model[]);
+      case HttpStatusCode.noContent:
+        return [];
       case HttpStatusCode.forbidden:
         throw new AccessDeniedError();
       default:
