@@ -58,7 +58,10 @@ export function Login({ validation, authentication }: LoginProps) {
         password: loginFormValues.password,
       });
     } catch (error) {
-      console.log(error);
+      setLoginFormErrors(prevState => ({
+        ...prevState,
+        general: error.message,
+      }));
     } finally {
       setLoadingSubmit(false);
     }
