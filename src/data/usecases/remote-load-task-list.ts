@@ -5,7 +5,7 @@ import { HttpClient, HttpStatusCode } from '../contracts/http';
 export class RemoteLoadTaskList implements LoadTaskList {
   constructor(
     private readonly url: string,
-    private readonly httpClient: HttpClient<LoadTaskList.Model>,
+    private readonly httpClient: HttpClient<LoadTaskList.Model[]>,
   ) {}
 
   async loadAll(): Promise<LoadTaskList.Model[]> {
@@ -15,7 +15,7 @@ export class RemoteLoadTaskList implements LoadTaskList {
     });
     switch (httpResponse.statusCode) {
       case HttpStatusCode.success:
-        return null;
+        return httpResponse.data || ([] as LoadTaskList.Model[]);
       case HttpStatusCode.forbidden:
         throw new AccessDeniedError();
       default:
