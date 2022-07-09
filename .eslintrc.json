@@ -1,13 +1,15 @@
 {
   "env": {
     "browser": true,
-    "es2021": true
+    "es2021": true,
+    "cypress/globals": true
   },
   "extends": [
     "plugin:react/recommended",
     "airbnb",
     "airbnb-typescript",
-    "prettier"
+    "prettier",
+    "plugin:cypress/recommended"
   ],
   "ignorePatterns": ["**/*.config.js", "**/*.common.js", "**/*.dev.js"],
   "parser": "@typescript-eslint/parser",
@@ -17,9 +19,9 @@
     },
     "ecmaVersion": "latest",
     "sourceType": "module",
-    "project": "./tsconfig.json"
+    "project": "./tsconfig-eslint.json"
   },
-  "plugins": ["react", "@typescript-eslint"],
+  "plugins": ["react", "@typescript-eslint", "cypress"],
   "rules": {
     "no-console": "warn",
     "class-methods-use-this": "off",
@@ -28,6 +30,12 @@
     "@typescript-eslint/lines-between-class-members": "off",
     "react/react-in-jsx-scope": "off",
     "import/no-extraneous-dependencies": "off",
-    "no-restricted-syntax": "off"
+    "no-restricted-syntax": "off",
+    "cypress/no-assigning-return-values": "error",
+    "cypress/no-unnecessary-waiting": "error",
+    "cypress/assertion-before-screenshot": "warn",
+    "cypress/no-force": "warn",
+    "cypress/no-async-tests": "error",
+    "cypress/no-pause": "error"
   }
 }

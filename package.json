@@ -5,7 +5,8 @@
     "dev": "webpack-dev-server --open --config webpack.dev.js",
     "test": "jest --passWithNoTests --no-cache --runInBand",
     "test:watch": "npm run test -- --watch",
-    "test:ci": "npm run test -- --coverage"
+    "test:ci": "npm run test -- --coverage",
+    "test:cypress": "cypress open"
   },
   "keywords": [],
   "author": "Gabriel Belther Santos",
@@ -24,10 +25,12 @@
     "@typescript-eslint/eslint-plugin": "^5.30.0",
     "@typescript-eslint/parser": "^5.30.0",
     "clean-webpack-plugin": "^4.0.0",
+    "cypress": "^10.3.0",
     "eslint": "^8.18.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-airbnb-typescript": "^17.0.0",
     "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-cypress": "^2.12.1",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-jsx-a11y": "^6.6.0",
     "eslint-plugin-react": "^7.30.1",
