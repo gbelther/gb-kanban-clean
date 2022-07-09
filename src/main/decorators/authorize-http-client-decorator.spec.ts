@@ -117,4 +117,10 @@ describe('AuthorizeHttpClientDecorator', () => {
       authorization: getStorageSpy.value.accessToken,
     });
   });
+
+  it('should return the same result as HttpClient', async () => {
+    const { sut, httpClientSpy } = makeSut();
+    const httpResponse = await sut.request(makeHttpRequest());
+    expect(httpResponse).toEqual(httpClientSpy.response);
+  });
 });
