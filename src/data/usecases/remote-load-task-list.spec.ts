@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import { AccessDeniedError } from '@/domain/errors';
+import { AccessDeniedError, UnexpectedError } from '@/domain/errors';
 import {
   HttpClient,
   HttpRequest,
@@ -62,5 +62,14 @@ describe('RemoteLoadTaskList', () => {
     };
     const loadAllPromise = sut.loadAll();
     await expect(loadAllPromise).rejects.toThrow(new AccessDeniedError());
+  });
+
+  it('should throw UnexpectedError if HttpClient returns another statusCode error', async () => {
+    const { sut, httpClientSpy } = makeSut();
+    httpClientSpy.response = {
+      statusCode: HttpStatusCode.serverError,
+    };
+    const loadAllPromise = sut.loadAll();
+    await expect(loadAllPromise).rejects.toThrow(new UnexpectedError());
   });
 });
