@@ -15,7 +15,7 @@ const loginFormErrorsInitial = {
 };
 
 export function Login({ validation, authentication }: LoginProps) {
-  const [loadingSubmit] = useState(false);
+  const [loadingSubmit, setLoadingSubmit] = useState(false);
   const [loginFormValues, setLoginFormValues] = useState({
     email: '',
     password: '',
@@ -45,11 +45,12 @@ export function Login({ validation, authentication }: LoginProps) {
     const emailIsValid = validate('email');
     const passwordIsValid = validate('password');
 
-    if (!emailIsValid || !passwordIsValid) {
+    if (loadingSubmit || !emailIsValid || !passwordIsValid) {
       return;
     }
 
     setLoginFormErrors(loginFormErrorsInitial);
+    setLoadingSubmit(true);
 
     try {
       await authentication.auth({
@@ -58,6 +59,8 @@ export function Login({ validation, authentication }: LoginProps) {
       });
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoadingSubmit(false);
     }
   };
 
