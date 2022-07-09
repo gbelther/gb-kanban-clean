@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-no-constructed-context-values */
 /* eslint-disable max-classes-per-file */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { fireEvent, screen, waitFor } from '@testing-library/react';
@@ -8,6 +9,7 @@ import { Validation } from '@/presentation/contracts';
 import { Authentication } from '@/domain/usecases';
 import { AccountModel } from '@/domain/models';
 import { InvalidCredentialsError } from '@/domain/errors';
+import { SessionAccountContext } from '@/presentation/contexts/session-account-context';
 
 const makeAuthenticationModel = (): Authentication.Model => ({
   accessToken: faker.datatype.uuid(),
@@ -42,23 +44,6 @@ class AuthenticationSpy implements Authentication {
   }
 }
 
-type SutTypes = {
-  validationStub: ValidationStub;
-  authenticationSpy: AuthenticationSpy;
-};
-
-const makeSut = (): SutTypes => {
-  const validationStub = new ValidationStub();
-  const authenticationSpy = new AuthenticationSpy();
-  renderTheme(
-    <Login validation={validationStub} authentication={authenticationSpy} />,
-  );
-  return {
-    validationStub,
-    authenticationSpy,
-  };
-};
-
 const populateLoginFields = (
   email = faker.internet.email(),
   password = faker.internet.password(),
@@ -80,6 +65,30 @@ const simulateSubmit = async (): Promise<void> => {
 const simulateValidSubmit = async (): Promise<void> => {
   populateLoginFields();
   await simulateSubmit();
+};
+
+type SutTypes = {
+  validationStub: ValidationStub;
+  authenticationSpy: AuthenticationSpy;
+  setSessionAccountSpy: jest.Mock;
+};
+
+const makeSut = (): SutTypes => {
+  const validationStub = new ValidationStub();
+  const authenticationSpy = new AuthenticationSpy();
+  const setSessionAccountSpy = jest.fn();
+  renderTheme(
+    <SessionAccountContext.Provider
+      value={{ setSessionAccount: setSessionAccountSpy }}
+    >
+      <Login validation={validationStub} authentication={authenticationSpy} />,
+    </SessionAccountContext.Provider>,
+  );
+  return {
+    validationStub,
+    authenticationSpy,
+    setSessionAccountSpy,
+  };
 };
 
 describe('<Login />', () => {
@@ -154,6 +163,16 @@ describe('<Login />', () => {
     await waitFor(async () => {
       simulateValidSubmit();
       expect(await screen.findByText(error.message)).toBeTruthy();
+    });
+  });
+
+  it('should call setSessionAccount with correct values if Authentication succeeds', async () => {
+    const { authenticationSpy, setSessionAccountSpy } = makeSut();
+    const account = makeAuthenticationModel();
+    authenticationSpy.account = account;
+    await waitFor(() => {
+      simulateValidSubmit();
+      expect(setSessionAccountSpy).toHaveBeenCalledWith(account);
     });
   });
 });
