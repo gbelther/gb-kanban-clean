@@ -4,6 +4,7 @@ export enum HttpStatusCode {
   success = 200,
   badRequest = 400,
   unauthorized = 401,
+  forbidden = 403,
   serverError = 500,
 }
 
@@ -14,7 +15,7 @@ export type HttpRequest = {
 };
 
 export type HttpResponse<T = any> = {
-  data: T;
+  data?: T;
   statusCode: HttpStatusCode;
 };
 

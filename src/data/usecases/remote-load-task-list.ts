@@ -1,5 +1,6 @@
+import { AccessDeniedError } from '@/domain/errors';
 import { LoadTaskList } from '@/domain/usecases';
-import { HttpClient } from '../contracts/http';
+import { HttpClient, HttpStatusCode } from '../contracts/http';
 
 export class RemoteLoadTaskList implements LoadTaskList {
   constructor(
@@ -8,10 +9,15 @@ export class RemoteLoadTaskList implements LoadTaskList {
   ) {}
 
   async loadAll(): Promise<LoadTaskList.Model[]> {
-    await this.httpClient.request({
+    const httpResponse = await this.httpClient.request({
       url: this.url,
       method: 'GET',
     });
-    return null;
+    switch (httpResponse.statusCode) {
+      case HttpStatusCode.forbidden:
+        throw new AccessDeniedError();
+      default:
+        return null;
+    }
   }
 }
