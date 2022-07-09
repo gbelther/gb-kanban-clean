@@ -1,4 +1,5 @@
 import { ChangeEvent, FormEvent, useMemo, useState } from 'react';
+import { useSessionAccount } from '@/presentation/contexts/session-account-context';
 import { Validation } from '@/presentation/contracts';
 import { Authentication } from '@/domain/usecases';
 import * as Sty from './styles';
@@ -15,6 +16,8 @@ const loginFormErrorsInitial = {
 };
 
 export function Login({ validation, authentication }: LoginProps) {
+  const { setSessionAccount } = useSessionAccount();
+
   const [loadingSubmit, setLoadingSubmit] = useState(false);
   const [loginFormValues, setLoginFormValues] = useState({
     email: '',
@@ -53,10 +56,12 @@ export function Login({ validation, authentication }: LoginProps) {
     setLoadingSubmit(true);
 
     try {
-      await authentication.auth({
+      const account = await authentication.auth({
         email: loginFormValues.email,
         password: loginFormValues.password,
       });
+
+      setSessionAccount(account);
     } catch (error) {
       setLoginFormErrors(prevState => ({
         ...prevState,
@@ -110,7 +115,7 @@ export function Login({ validation, authentication }: LoginProps) {
           </Sty.Inputs>
           <Sty.Feedback>
             {loadingSubmit && (
-              <Sty.SpinnerWrap data-testid="login-input-password">
+              <Sty.SpinnerWrap data-testid="login-spinner">
                 <Sty.Spinner />
               </Sty.SpinnerWrap>
             )}
