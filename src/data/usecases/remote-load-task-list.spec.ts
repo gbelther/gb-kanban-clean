@@ -100,4 +100,13 @@ describe('RemoteLoadTaskList', () => {
     const httpResponse = await sut.loadAll();
     expect(httpResponse).toHaveLength(length);
   });
+
+  it('should return an empty list if HttpClient returns 204', async () => {
+    const { sut, httpClientSpy } = makeSut();
+    httpClientSpy.response = {
+      statusCode: HttpStatusCode.noContent,
+    };
+    const httpResponse = await sut.loadAll();
+    expect(httpResponse).toEqual([]);
+  });
 });
