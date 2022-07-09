@@ -26,9 +26,9 @@ type SutTypes = {
   httpClientSpy: HttpClientSpy;
 };
 
-const makeSut = (): SutTypes => {
+const makeSut = (url = faker.internet.url()): SutTypes => {
   const httpClientSpy = new HttpClientSpy();
-  const sut = new RemoteLoadTaskList(httpClientSpy);
+  const sut = new RemoteLoadTaskList(url, httpClientSpy);
   return {
     sut,
     httpClientSpy,
@@ -40,5 +40,12 @@ describe('RemoteLoadTaskList', () => {
     const { sut, httpClientSpy } = makeSut();
     await sut.loadAll();
     expect(httpClientSpy.method).toBe('GET');
+  });
+
+  it('should call HttpClient with correct url', async () => {
+    const url = faker.internet.url();
+    const { sut, httpClientSpy } = makeSut(url);
+    await sut.loadAll();
+    expect(httpClientSpy.url).toBe(url);
   });
 });
