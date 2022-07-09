@@ -3,13 +3,15 @@ import { faker } from '@faker-js/faker';
 import { GetStorage } from '@/data/contracts/cache';
 import { HttpClient, HttpRequest, HttpResponse } from '@/data/contracts/http';
 import { AuthorizeHttpClientDecorator } from './authorize-http-client-decorator';
+import { Authentication } from '@/domain/usecases';
 
 class GetStorageSpy implements GetStorage {
   key: string;
+  value: any = JSON.parse(faker.datatype.json());
 
   get(key: string): any {
     this.key = key;
-    return null;
+    return this.value;
   }
 }
 
@@ -38,6 +40,16 @@ const makeHttpRequest = (): HttpRequest => ({
   url: faker.internet.url(),
   method: faker.internet.httpMethod(),
   body: JSON.parse(faker.datatype.json()),
+});
+
+const makeAccountModel = (): Authentication.Model => ({
+  accessToken: faker.datatype.uuid(),
+  refreshToken: faker.datatype.uuid(),
+  user: {
+    id: faker.datatype.uuid(),
+    name: faker.name.findName(),
+    email: faker.internet.email(),
+  },
 });
 
 type SutTypes = {
@@ -75,5 +87,18 @@ describe('AuthorizeHttpClientDecorator', () => {
     };
     await sut.request(httpRequest);
     expect(httpClientSpy.headers).toEqual(httpRequest.headers);
+  });
+
+  it('should add headers', async () => {
+    const { sut, httpClientSpy, getStorageSpy } = makeSut();
+    getStorageSpy.value = makeAccountModel();
+    const httpRequest: HttpRequest = {
+      url: faker.internet.url(),
+      method: faker.internet.httpMethod(),
+    };
+    await sut.request(httpRequest);
+    expect(httpClientSpy.headers).toEqual({
+      authorization: getStorageSpy.value.accessToken,
+    });
   });
 });
