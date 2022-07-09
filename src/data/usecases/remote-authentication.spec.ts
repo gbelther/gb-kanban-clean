@@ -5,7 +5,7 @@ import {
   HttpRequest,
   HttpResponse,
   HttpStatusCode,
-} from '../contracts';
+} from '../contracts/http';
 import { RemoteAuthentication } from './remote-authentication';
 import { InvalidCredentialsError, UnexpectedError } from '@/domain/errors';
 
