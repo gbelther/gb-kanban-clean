@@ -1,3 +1,4 @@
+/* eslint-disable no-plusplus */
 import { faker } from '@faker-js/faker';
 import { AccessDeniedError, UnexpectedError } from '@/domain/errors';
 import {
@@ -7,6 +8,7 @@ import {
   HttpStatusCode,
 } from '../contracts/http';
 import { RemoteLoadTaskList } from './remote-load-task-list';
+import { LoadTaskList } from '@/domain/usecases';
 
 class HttpClientSpy implements HttpClient {
   url: string;
@@ -26,6 +28,20 @@ class HttpClientSpy implements HttpClient {
     return this.response;
   }
 }
+
+const makeRemoteTaskListModel = (length = 2): LoadTaskList.Model[] => {
+  const list: LoadTaskList.Model[] = [];
+  for (let i = 0; i < length; i++) {
+    list.push({
+      id: faker.datatype.uuid(),
+      title: faker.random.words(),
+      content: faker.random.words(),
+      statusId: faker.datatype.uuid(),
+      userId: faker.datatype.uuid(),
+    });
+  }
+  return list;
+};
 
 type SutTypes = {
   sut: RemoteLoadTaskList;
@@ -71,5 +87,17 @@ describe('RemoteLoadTaskList', () => {
     };
     const loadAllPromise = sut.loadAll();
     await expect(loadAllPromise).rejects.toThrow(new UnexpectedError());
+  });
+
+  it('should return a list of TaskModels if HttpClient returns 200', async () => {
+    const { sut, httpClientSpy } = makeSut();
+    const length = faker.datatype.number(10);
+    const taskList = makeRemoteTaskListModel(length);
+    httpClientSpy.response = {
+      statusCode: HttpStatusCode.success,
+      data: taskList,
+    };
+    const httpResponse = await sut.loadAll();
+    expect(httpResponse).toHaveLength(length);
   });
 });
