@@ -64,14 +64,20 @@ const populateLoginFields = (
   password = faker.internet.password(),
 ): void => {
   const inputEmail = screen.getByTestId('login-input-email');
-  userEvent.type(inputEmail, email);
+  fireEvent.input(inputEmail, { target: { value: email } });
   const inputPassword = screen.getByTestId('login-input-password');
-  userEvent.type(inputPassword, password);
+  fireEvent.input(inputPassword, {
+    target: { value: password },
+  });
+};
+
+const simulateSubmit = (): void => {
+  fireEvent.submit(screen.getByTestId('login-form'));
 };
 
 const simulateValidSubmit = (): void => {
   populateLoginFields();
-  fireEvent.submit(screen.getByTestId('login-form'));
+  simulateSubmit();
 };
 
 describe('<Login />', () => {
@@ -122,5 +128,13 @@ describe('<Login />', () => {
       .mockImplementationOnce(() => errorMessage);
     simulateValidSubmit();
     expect(screen.queryByText(errorMessage)).toBeTruthy();
+  });
+
+  it('should call Authentication with correct values', async () => {
+    const { authenticationSpy } = makeSut();
+    const { email, password } = makeAuthenticationParams();
+    populateLoginFields(email, password);
+    simulateSubmit();
+    expect(authenticationSpy.params).toEqual({ email, password });
   });
 });
