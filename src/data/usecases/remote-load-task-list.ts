@@ -1,4 +1,4 @@
-import { AccessDeniedError } from '@/domain/errors';
+import { AccessDeniedError, UnexpectedError } from '@/domain/errors';
 import { LoadTaskList } from '@/domain/usecases';
 import { HttpClient, HttpStatusCode } from '../contracts/http';
 
@@ -14,10 +14,12 @@ export class RemoteLoadTaskList implements LoadTaskList {
       method: 'GET',
     });
     switch (httpResponse.statusCode) {
+      case HttpStatusCode.success:
+        return null;
       case HttpStatusCode.forbidden:
         throw new AccessDeniedError();
       default:
-        return null;
+        throw new UnexpectedError();
     }
   }
 }
