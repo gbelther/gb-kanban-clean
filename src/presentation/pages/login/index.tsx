@@ -92,7 +92,9 @@ export function Login({ validation, authentication }: LoginProps) {
                 onChange={handleLoginValuesChange}
               />
               {loginFormErrors.email && (
-                <Sty.ErrorMessage>{loginFormErrors.email}</Sty.ErrorMessage>
+                <Sty.ErrorMessage data-testid="login-email-error">
+                  {loginFormErrors.email}
+                </Sty.ErrorMessage>
               )}
             </Sty.InputBox>
             <Sty.InputBox>
