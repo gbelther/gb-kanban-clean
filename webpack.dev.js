@@ -28,7 +28,9 @@ module.exports = merge(webpackCommon, {
   plugins: [
     new HtmlWebpackPlugin({ template: './templates/template.dev.html' }),
     new DefinePlugin({
-      'process.env.API_URL': JSON.stringify(''),
+      'process.env.API_URL': JSON.stringify(
+        'https://gb-kanban-api.herokuapp.com',
+      ),
     }),
   ],
 });

@@ -3,4 +3,4 @@ import { Authentication } from '@/domain/usecases';
 import { makeAxiosHttpClient, makeUrl } from '../http';
 
 export const makeRemoteAuthentication = (): Authentication =>
-  new RemoteAuthentication(makeUrl('/login'), makeAxiosHttpClient());
+  new RemoteAuthentication(makeUrl('/sessions'), makeAxiosHttpClient());
