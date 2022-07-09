@@ -101,4 +101,20 @@ describe('AuthorizeHttpClientDecorator', () => {
       authorization: getStorageSpy.value.accessToken,
     });
   });
+
+  it('should merge headers', async () => {
+    const { sut, httpClientSpy, getStorageSpy } = makeSut();
+    getStorageSpy.value = makeAccountModel();
+    const prevHeaders = { [faker.database.column()]: faker.random.words() };
+    const httpRequest: HttpRequest = {
+      url: faker.internet.url(),
+      method: faker.internet.httpMethod(),
+      headers: prevHeaders,
+    };
+    await sut.request(httpRequest);
+    expect(httpClientSpy.headers).toEqual({
+      ...prevHeaders,
+      authorization: getStorageSpy.value.accessToken,
+    });
+  });
 });
