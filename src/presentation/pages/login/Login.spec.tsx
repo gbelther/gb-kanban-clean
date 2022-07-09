@@ -1,8 +1,7 @@
 /* eslint-disable max-classes-per-file */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import userEvent from '@testing-library/user-event';
 import { fireEvent, screen, waitFor } from '@testing-library/react';
-import { Faker, faker } from '@faker-js/faker';
+import { faker } from '@faker-js/faker';
 import { renderTheme } from '@/main/config/tests/renderTheme';
 import { Login } from '.';
 import { Validation } from '@/presentation/contracts';
@@ -71,13 +70,15 @@ const populateLoginFields = (
   });
 };
 
-const simulateSubmit = (): void => {
-  fireEvent.submit(screen.getByTestId('login-form'));
+const simulateSubmit = async (): Promise<void> => {
+  const loginForm = screen.getByTestId('login-form');
+  fireEvent.submit(loginForm);
+  await waitFor(() => loginForm);
 };
 
-const simulateValidSubmit = (): void => {
+const simulateValidSubmit = async (): Promise<void> => {
   populateLoginFields();
-  simulateSubmit();
+  await simulateSubmit();
 };
 
 describe('<Login />', () => {
@@ -120,7 +121,7 @@ describe('<Login />', () => {
     });
   });
 
-  it('should show email error validation is validation fails', async () => {
+  it('should show email error validation is validation fails', () => {
     const { validationStub } = makeSut();
     const errorMessage = faker.random.words();
     jest
@@ -130,11 +131,18 @@ describe('<Login />', () => {
     expect(screen.queryByText(errorMessage)).toBeTruthy();
   });
 
-  it('should call Authentication with correct values', async () => {
+  it('should call Authentication with correct values', () => {
     const { authenticationSpy } = makeSut();
     const { email, password } = makeAuthenticationParams();
     populateLoginFields(email, password);
     simulateSubmit();
     expect(authenticationSpy.params).toEqual({ email, password });
+  });
+
+  it('should call Authentication only if loading is false', async () => {
+    const { authenticationSpy } = makeSut();
+    await simulateValidSubmit();
+    await simulateSubmit();
+    expect(authenticationSpy.callsCount).toBe(1);
   });
 });
