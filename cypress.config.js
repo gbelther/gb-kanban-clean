@@ -8,7 +8,8 @@ module.exports = defineConfig({
     supportFile: 'tests/cypress/e2e',
     fileServerFolder: 'tests/cypress',
     fixturesFolder: 'tests/cypress/fixtures',
-    supportFolder: 'tests/cypress/support',
+    supportFolder: 'tests/cypress/support/index.js',
     specPattern: 'tests/cypress/e2e/**/*.cy.{ts,tsx}',
+    baseUrl: 'http://localhost:3000',
   },
 });
