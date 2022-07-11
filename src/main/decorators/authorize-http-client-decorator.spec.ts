@@ -98,7 +98,7 @@ describe('AuthorizeHttpClientDecorator', () => {
     };
     await sut.request(httpRequest);
     expect(httpClientSpy.headers).toEqual({
-      authorization: getStorageSpy.value.accessToken,
+      Authorization: `Bearer ${getStorageSpy.value.accessToken}`,
     });
   });
 
@@ -114,7 +114,7 @@ describe('AuthorizeHttpClientDecorator', () => {
     await sut.request(httpRequest);
     expect(httpClientSpy.headers).toEqual({
       ...prevHeaders,
-      authorization: getStorageSpy.value.accessToken,
+      Authorization: `Bearer ${getStorageSpy.value.accessToken}`,
     });
   });
 
