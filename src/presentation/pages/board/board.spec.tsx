@@ -1,6 +1,6 @@
 /* eslint-disable no-plusplus */
 /* eslint-disable max-classes-per-file */
-import { waitFor } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import { faker } from '@faker-js/faker';
 import { LoadTaskList, LoadTaskStatusList } from '@/domain/usecases';
 import { renderTheme } from '@/main/config/tests/renderTheme';
@@ -89,5 +89,11 @@ describe('<Board />', () => {
     await waitFor(() => {
       expect(loadTaskStatusListSpy.callsCount).toBe(1);
     });
+  });
+
+  it('should render statuses column when loadTaskStatusList returns statuses', async () => {
+    makeSut();
+    const statusColumns = await screen.findAllByTestId('status-column');
+    expect(statusColumns.length).toBeGreaterThanOrEqual(1);
   });
 });

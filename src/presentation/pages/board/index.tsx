@@ -32,7 +32,7 @@ export function Board({ loadTaskList, loadTaskStatusList }: BoardParams) {
   return (
     <Sty.Container>
       {statuses.map(status => (
-        <Sty.TaskGroup key={status.id}>
+        <Sty.TaskGroup data-testid="status-column" key={status.id}>
           <Sty.TaskGroupHeader>
             <Sty.TaskGroupTitle>{status.name}</Sty.TaskGroupTitle>
           </Sty.TaskGroupHeader>
