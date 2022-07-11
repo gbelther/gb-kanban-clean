@@ -14,6 +14,9 @@ export function Board({ loadTaskList, loadTaskStatusList }: BoardParams) {
   const [loadTaskListError, setLoadTaskListError] = useState('');
   const [loadTaskStatusListError, setLoadTaskStatusListError] = useState('');
 
+  const filterTasksByStatusId = (statusId: string) =>
+    tasks.filter(task => task.statusId === statusId);
+
   useEffect(() => {
     loadTaskList
       .loadAll()
@@ -22,43 +25,39 @@ export function Board({ loadTaskList, loadTaskStatusList }: BoardParams) {
 
     loadTaskStatusList
       .loadAll()
-      .then(statusList => setStatuses(statusList))
+      .then(statusList =>
+        setStatuses(
+          statusList.sort((a, b) => {
+            if (a.order > b.order) return 1;
+            if (a.order < b.order) return -1;
+            return 0;
+          }),
+        ),
+      )
       .catch(error => setLoadTaskStatusListError(error.message));
   }, []);
 
-  console.log('tasks: ', tasks);
   console.log('loadTaskListError: ', loadTaskListError);
-  console.log('statuses: ', statuses);
   console.log('loadTaskStatusListError: ', loadTaskStatusListError);
 
   return (
     <Sty.Container>
-      <Sty.TaskGroup>
-        <Sty.TaskGroupHeader>
-          <Sty.TaskGroupTitle>TODO</Sty.TaskGroupTitle>
-        </Sty.TaskGroupHeader>
-        <Sty.TaskGroupContent>
-          <TaskCard title="Task 01" content="Conteúdo da task" />
-          <TaskCard title="Task 01" content="Conteúdo da task" />
-          <TaskCard title="Task 01" content="Conteúdo da task" />
-        </Sty.TaskGroupContent>
-      </Sty.TaskGroup>
-      <Sty.TaskGroup>
-        <Sty.TaskGroupHeader>
-          <Sty.TaskGroupTitle>DOING</Sty.TaskGroupTitle>
-        </Sty.TaskGroupHeader>
-        <Sty.TaskGroupContent>
-          <TaskCard title="Task 01" content="Conteúdo da task" />
-        </Sty.TaskGroupContent>
-      </Sty.TaskGroup>
-      <Sty.TaskGroup>
-        <Sty.TaskGroupHeader>
-          <Sty.TaskGroupTitle>DONE</Sty.TaskGroupTitle>
-        </Sty.TaskGroupHeader>
-        <Sty.TaskGroupContent>
-          <TaskCard title="Task 01" content="Conteúdo da task" />
-        </Sty.TaskGroupContent>
-      </Sty.TaskGroup>
+      {statuses.map(status => (
+        <Sty.TaskGroup key={status.id}>
+          <Sty.TaskGroupHeader>
+            <Sty.TaskGroupTitle>{status.name}</Sty.TaskGroupTitle>
+          </Sty.TaskGroupHeader>
+          <Sty.TaskGroupContent>
+            {filterTasksByStatusId(status.id).map(task => (
+              <TaskCard
+                key={task.id}
+                title={task.title}
+                content={task.content}
+              />
+            ))}
+          </Sty.TaskGroupContent>
+        </Sty.TaskGroup>
+      ))}
     </Sty.Container>
   );
 }
