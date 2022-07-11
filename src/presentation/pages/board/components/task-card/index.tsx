@@ -1,16 +1,18 @@
 import * as Sty from './styles';
 
-export function TaskCard() {
+type TaskCardProps = {
+  title: string;
+  content: string;
+};
+
+export function TaskCard({ title = '', content = '' }: TaskCardProps) {
   return (
     <Sty.Container>
       <Sty.Header>
-        <Sty.Title>Task 01</Sty.Title>
+        <Sty.Title>{title}</Sty.Title>
       </Sty.Header>
       <Sty.ContentBox>
-        <Sty.Content>
-          Lorem ipsum dolor sit amet consectetur, adipisicing elit. Atque rerum
-          velit quis cum magni delectus sed ea
-        </Sty.Content>
+        <Sty.Content>{content}</Sty.Content>
       </Sty.ContentBox>
     </Sty.Container>
   );

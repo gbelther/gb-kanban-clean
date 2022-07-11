@@ -4,7 +4,8 @@ export const Container = styled.div`
   background-color: ${({ theme }) => theme.colors.mainLight};
   border-radius: 4px;
   padding: 0.25rem;
-  max-width: 250px;
+  max-width: 300px;
+  min-width: 140px;
 `;
 
 export const Header = styled.header`
