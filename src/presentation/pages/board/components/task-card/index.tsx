@@ -7,7 +7,7 @@ type TaskCardProps = {
 
 export function TaskCard({ title = '', content = '' }: TaskCardProps) {
   return (
-    <Sty.Container>
+    <Sty.Container data-testid="task-card">
       <Sty.Header>
         <Sty.Title>{title}</Sty.Title>
       </Sty.Header>

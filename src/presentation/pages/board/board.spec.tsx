@@ -22,16 +22,6 @@ const makeTaskList = (length: number = 3): LoadTaskList.Model[] => {
   return taskList;
 };
 
-class LoadTaskListSpy implements LoadTaskList {
-  taskList = makeTaskList();
-  callsCount: number = 0;
-
-  async loadAll(): Promise<LoadTaskList.Model[]> {
-    this.callsCount++;
-    return this.taskList;
-  }
-}
-
 const makeStatus = (order: number): LoadTaskStatusList.Model => ({
   id: faker.datatype.uuid(),
   name: faker.random.word(),
@@ -46,8 +36,25 @@ const makeStatusList = (length: number = 3): LoadTaskStatusList.Model[] => {
   return statusList;
 };
 
+const statusListFake: LoadTaskStatusList.Model[] = makeStatusList();
+const taskListFake: LoadTaskList.Model[] = makeTaskList().map(task => ({
+  ...task,
+  statusId:
+    statusListFake[Math.floor(Math.random() * statusListFake.length)].id,
+}));
+
+class LoadTaskListSpy implements LoadTaskList {
+  taskList = taskListFake;
+  callsCount: number = 0;
+
+  async loadAll(): Promise<LoadTaskList.Model[]> {
+    this.callsCount++;
+    return this.taskList;
+  }
+}
+
 class LoadTaskStatusListSpy implements LoadTaskStatusList {
-  statusList = makeStatusList();
+  statusList = statusListFake;
   callsCount: number = 0;
 
   async loadAll(): Promise<LoadTaskStatusList.Model[]> {
@@ -95,5 +102,11 @@ describe('<Board />', () => {
     makeSut();
     const statusColumns = await screen.findAllByTestId('status-column');
     expect(statusColumns.length).toBeGreaterThanOrEqual(1);
+  });
+
+  it('should render tasks cards when loadTaskList returns tasks', async () => {
+    makeSut();
+    const tasks = await screen.findAllByTestId('task-card');
+    expect(tasks.length).toBeGreaterThanOrEqual(1);
   });
 });
