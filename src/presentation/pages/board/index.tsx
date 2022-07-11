@@ -11,34 +11,23 @@ type BoardParams = {
 export function Board({ loadTaskList, loadTaskStatusList }: BoardParams) {
   const [tasks, setTasks] = useState<LoadTaskList.Model[]>([]);
   const [statuses, setStatuses] = useState<LoadTaskStatusList.Model[]>([]);
-  const [loadTaskListError, setLoadTaskListError] = useState('');
-  const [loadTaskStatusListError, setLoadTaskStatusListError] = useState('');
 
   const filterTasksByStatusId = (statusId: string) =>
     tasks.filter(task => task.statusId === statusId);
 
   useEffect(() => {
-    loadTaskList
-      .loadAll()
-      .then(taskList => setTasks(taskList))
-      .catch(error => setLoadTaskListError(error.message));
+    loadTaskList.loadAll().then(taskList => setTasks(taskList));
 
-    loadTaskStatusList
-      .loadAll()
-      .then(statusList =>
-        setStatuses(
-          statusList.sort((a, b) => {
-            if (a.order > b.order) return 1;
-            if (a.order < b.order) return -1;
-            return 0;
-          }),
-        ),
-      )
-      .catch(error => setLoadTaskStatusListError(error.message));
+    loadTaskStatusList.loadAll().then(statusList =>
+      setStatuses(
+        statusList.sort((a, b) => {
+          if (a.order > b.order) return 1;
+          if (a.order < b.order) return -1;
+          return 0;
+        }),
+      ),
+    );
   }, []);
-
-  console.log('loadTaskListError: ', loadTaskListError);
-  console.log('loadTaskStatusListError: ', loadTaskStatusListError);
 
   return (
     <Sty.Container>
