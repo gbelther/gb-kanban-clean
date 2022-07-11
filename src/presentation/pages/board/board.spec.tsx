@@ -83,4 +83,11 @@ describe('<Board />', () => {
       expect(loadTaskListSpy.callsCount).toBe(1);
     });
   });
+
+  it('should call loadTaskStatusList when the page loaded', async () => {
+    const { loadTaskStatusListSpy } = makeSut();
+    await waitFor(() => {
+      expect(loadTaskStatusListSpy.callsCount).toBe(1);
+    });
+  });
 });
