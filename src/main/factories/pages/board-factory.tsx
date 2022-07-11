@@ -1,3 +1,6 @@
 import { Board } from '@/presentation/pages/board';
+import { makeRemoteLoadTaskList } from '../usecases';
 
-export const makeBoard = () => <Board />;
+export const makeBoard = () => (
+  <Board loadTaskList={makeRemoteLoadTaskList()} />
+);

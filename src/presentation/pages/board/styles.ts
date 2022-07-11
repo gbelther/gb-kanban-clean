@@ -23,4 +23,8 @@ export const TaskGroupTitle = styled.h3`
 
 export const TaskGroupContent = styled.section`
   padding: 0.5rem 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  flex-basis: 0px;
 `;
