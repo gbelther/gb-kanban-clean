@@ -3,6 +3,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { fireEvent, screen, waitFor } from '@testing-library/react';
 import { faker } from '@faker-js/faker';
+import { unstable_HistoryRouter as HistoryRouter } from 'react-router-dom';
+import { createMemoryHistory } from 'history';
 import { renderTheme } from '@/main/config/tests/renderTheme';
 import { Login } from '.';
 import { Validation } from '@/presentation/contracts';
@@ -73,6 +75,8 @@ type SutTypes = {
   setSessionAccountSpy: jest.Mock;
 };
 
+const history = createMemoryHistory({ initialEntries: ['/login'] });
+
 const makeSut = (): SutTypes => {
   const validationStub = new ValidationStub();
   const authenticationSpy = new AuthenticationSpy();
@@ -84,7 +88,9 @@ const makeSut = (): SutTypes => {
         getSessionAccount: jest.fn(),
       }}
     >
-      <Login validation={validationStub} authentication={authenticationSpy} />,
+      <HistoryRouter history={history}>
+        <Login validation={validationStub} authentication={authenticationSpy} />
+      </HistoryRouter>
     </SessionAccountContext.Provider>,
   );
   return {
@@ -176,6 +182,14 @@ describe('<Login />', () => {
     await waitFor(() => {
       simulateValidSubmit();
       expect(setSessionAccountSpy).toHaveBeenCalledWith(account);
+    });
+  });
+
+  it('should redirect to / if Authentication succeeds', async () => {
+    makeSut();
+    await waitFor(() => {
+      simulateValidSubmit();
+      expect(history.location.pathname).toBe('/');
     });
   });
 });
