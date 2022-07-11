@@ -1,4 +1,5 @@
 import { ChangeEvent, FormEvent, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useSessionAccount } from '@/presentation/contexts/session-account-context';
 import { Validation } from '@/presentation/contracts';
 import { Authentication } from '@/domain/usecases';
@@ -16,6 +17,7 @@ const loginFormErrorsInitial = {
 };
 
 export function Login({ validation, authentication }: LoginProps) {
+  const navigate = useNavigate();
   const { setSessionAccount } = useSessionAccount();
 
   const [loadingSubmit, setLoadingSubmit] = useState(false);
@@ -62,6 +64,7 @@ export function Login({ validation, authentication }: LoginProps) {
       });
 
       setSessionAccount(account);
+      navigate('/');
     } catch (error) {
       setLoginFormErrors(prevState => ({
         ...prevState,
