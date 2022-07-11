@@ -9,6 +9,7 @@ const makeHttpRequest = (): HttpRequest => ({
   url: faker.internet.url(),
   method: faker.internet.httpMethod(),
   body: JSON.parse(faker.datatype.json()),
+  headers: JSON.parse(faker.datatype.json()),
 });
 
 const makeHttpResponse = (): HttpResponse => ({
@@ -45,6 +46,7 @@ describe('AxiosHttpClient', () => {
       url: requestParams.url,
       method: requestParams.method,
       data: requestParams.body,
+      headers: requestParams.headers,
     });
   });
 
