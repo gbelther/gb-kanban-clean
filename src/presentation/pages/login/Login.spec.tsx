@@ -79,7 +79,10 @@ const makeSut = (): SutTypes => {
   const setSessionAccountSpy = jest.fn();
   renderTheme(
     <SessionAccountContext.Provider
-      value={{ setSessionAccount: setSessionAccountSpy }}
+      value={{
+        setSessionAccount: setSessionAccountSpy,
+        getSessionAccount: jest.fn(),
+      }}
     >
       <Login validation={validationStub} authentication={authenticationSpy} />,
     </SessionAccountContext.Provider>,

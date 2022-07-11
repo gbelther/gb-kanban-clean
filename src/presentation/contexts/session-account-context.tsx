@@ -1,9 +1,13 @@
 import { createContext, ReactNode, useContext, useMemo } from 'react';
 import { AccountModel } from '@/domain/models';
-import { setSessionAccountAdapter } from '@/main/adapters';
+import {
+  getSessionAccountAdapter,
+  setSessionAccountAdapter,
+} from '@/main/adapters';
 
 type SessionAccountContextData = {
   setSessionAccount: (account: AccountModel) => void;
+  getSessionAccount: () => AccountModel;
 };
 
 type SessionAccountContextProviderParams = {
@@ -17,7 +21,10 @@ export function SessionAccountContextProvider({
   children,
 }: SessionAccountContextProviderParams) {
   const setSessionAccountState = useMemo(
-    () => ({ setSessionAccount: setSessionAccountAdapter }),
+    () => ({
+      setSessionAccount: setSessionAccountAdapter,
+      getSessionAccount: getSessionAccountAdapter,
+    }),
     [],
   );
 
