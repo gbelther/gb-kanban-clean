@@ -1,5 +1,15 @@
 import { faker } from '@faker-js/faker';
 
+const makeBodyLoginSucceeds = () => ({
+  accessToken: faker.datatype.uuid(),
+  refreshToken: faker.datatype.uuid(),
+  user: {
+    id: faker.datatype.uuid(),
+    name: faker.name.findName(),
+    email: faker.internet.email(),
+  },
+});
+
 const mockLoginUnauthorizedError = (): void => {
   cy.intercept(
     {
@@ -12,7 +22,20 @@ const mockLoginUnauthorizedError = (): void => {
         error: faker.random.words(),
       },
     },
-  ).as('login');
+  ).as('login-unauthorized');
+};
+
+const mockLoginSucceeds = (): void => {
+  cy.intercept(
+    {
+      method: 'POST',
+      url: '**/sessions',
+    },
+    {
+      statusCode: 200,
+      body: makeBodyLoginSucceeds(),
+    },
+  ).as('login-succeeds');
 };
 
 describe('<Login />', () => {
@@ -43,5 +66,16 @@ describe('<Login />', () => {
     );
     cy.get('[data-testid=login-submit-button]').click();
     cy.get('[data-testid=login-error-message]').should('be.visible');
+  });
+
+  it('should redirect to / if Authentication succeeds', () => {
+    mockLoginSucceeds();
+    cy.get('[data-testid=login-input-email]').type(faker.internet.email());
+    cy.get('[data-testid=login-input-password]').type(
+      faker.internet.password(),
+    );
+    cy.get('[data-testid=login-submit-button]').click();
+    const { baseUrl } = Cypress.config();
+    cy.url().should('eq', `${baseUrl}/`);
   });
 });
