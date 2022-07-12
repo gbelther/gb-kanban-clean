@@ -1,12 +1,18 @@
-import { RefreshTokenModel } from '@/domain/models';
 import { RefreshToken } from '@/domain/usecases';
-import { GetStorage } from '../contracts/cache';
+import { HttpClient } from '../contracts/http';
 
 export class RemoteRefreshToken implements RefreshToken {
-  constructor(private readonly getStorage: GetStorage) {}
+  constructor(
+    private readonly url: string,
+    private readonly httpClient: HttpClient<RefreshToken.Model>,
+  ) {}
 
-  async refresh(): Promise<RefreshTokenModel> {
-    this.getStorage.get('@GB-Kanban/session-account');
+  async refresh(params: RefreshToken.Params): Promise<RefreshToken.Model> {
+    await this.httpClient.request({
+      url: this.url,
+      method: 'POST',
+      body: params,
+    });
     return null;
   }
 }
