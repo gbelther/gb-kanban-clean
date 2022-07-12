@@ -43,4 +43,11 @@ describe('RemoteRefreshToken', () => {
     await sut.refresh({ refreshToken });
     expect(httpClientSpy.url).toEqual(url);
   });
+
+  it('should call HttpClient with correct method', async () => {
+    const { sut, httpClientSpy } = makeSut();
+    const refreshToken = faker.datatype.uuid();
+    await sut.refresh({ refreshToken });
+    expect(httpClientSpy.method).toEqual('POST');
+  });
 });
