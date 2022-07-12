@@ -1,35 +1,46 @@
 import { faker } from '@faker-js/faker';
-import { GetStorage } from '../contracts/cache';
+import { HttpClient, HttpRequest, HttpResponse } from '../contracts/http';
 import { RemoteRefreshToken } from './remote-refresh-token';
 
-class GetStorageSpy implements GetStorage {
-  key: string;
-  value: any = JSON.parse(faker.datatype.json());
+class HttpClientSpy implements HttpClient {
+  url: string;
+  method: string;
+  body: any;
 
-  get(key: string): any {
-    this.key = key;
-    return this.value;
+  response: HttpResponse = {
+    statusCode: 200,
+    data: JSON.parse(faker.datatype.json()),
+  };
+
+  async request(data: HttpRequest): Promise<HttpResponse<any>> {
+    this.url = data.url;
+    this.method = data.method;
+    this.body = data.body;
+
+    return this.response;
   }
 }
 
 type SutTypes = {
   sut: RemoteRefreshToken;
-  getStorageSpy: GetStorageSpy;
+  httpClientSpy: HttpClientSpy;
 };
 
-const makeSut = (): SutTypes => {
-  const getStorageSpy = new GetStorageSpy();
-  const sut = new RemoteRefreshToken(getStorageSpy);
+const makeSut = (url = faker.internet.url()): SutTypes => {
+  const httpClientSpy = new HttpClientSpy();
+  const sut = new RemoteRefreshToken(url, httpClientSpy);
   return {
     sut,
-    getStorageSpy,
+    httpClientSpy,
   };
 };
 
 describe('RemoteRefreshToken', () => {
-  it('should call GetStorage', async () => {
-    const { sut, getStorageSpy } = makeSut();
-    await sut.refresh();
-    expect(getStorageSpy.key).toEqual('@GB-Kanban/session-account');
+  it('should call HttpClient with correct url', async () => {
+    const url = faker.internet.url();
+    const { sut, httpClientSpy } = makeSut(url);
+    const refreshToken = faker.datatype.uuid();
+    await sut.refresh({ refreshToken });
+    expect(httpClientSpy.url).toEqual(url);
   });
 });
