@@ -1,5 +1,10 @@
 import { faker } from '@faker-js/faker';
-import { HttpClient, HttpRequest, HttpResponse } from '../contracts/http';
+import {
+  HttpClient,
+  HttpRequest,
+  HttpResponse,
+  HttpStatusCode,
+} from '../contracts/http';
 import { RemoteRefreshToken } from './remote-refresh-token';
 
 class HttpClientSpy implements HttpClient {
@@ -56,5 +61,21 @@ describe('RemoteRefreshToken', () => {
     const refreshToken = faker.datatype.uuid();
     await sut.refresh({ refreshToken });
     expect(httpClientSpy.body).toEqual({ refreshToken });
+  });
+
+  it('should return AccessToken and RefreshToken if HttpClient returns 200', async () => {
+    const { sut, httpClientSpy } = makeSut();
+    const returnData = {
+      accessToken: faker.datatype.uuid(),
+      refreshToken: faker.datatype.uuid(),
+    };
+    httpClientSpy.response = {
+      statusCode: HttpStatusCode.success,
+      data: returnData,
+    };
+    const tokens = await sut.refresh({
+      refreshToken: faker.datatype.uuid(),
+    });
+    expect(tokens).toEqual(returnData);
   });
 });
