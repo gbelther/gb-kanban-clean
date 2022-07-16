@@ -1,3 +1,4 @@
+import { UnexpectedError } from '@/domain/errors';
 import { RefreshToken } from '@/domain/usecases';
 import { HttpClient, HttpStatusCode } from '../contracts/http';
 
@@ -17,7 +18,7 @@ export class RemoteRefreshToken implements RefreshToken {
       case HttpStatusCode.success:
         return httpResponse.data;
       default:
-        return null;
+        throw new UnexpectedError();
     }
   }
 }
