@@ -1,7 +1,13 @@
 import { faker } from '@faker-js/faker';
 import { UpdateTask } from '@/domain/usecases';
-import { HttpClient, HttpRequest, HttpResponse } from '../contracts/http';
+import {
+  HttpClient,
+  HttpRequest,
+  HttpResponse,
+  HttpStatusCode,
+} from '../contracts/http';
 import { RemoteUpdateTask } from './remote-update-task';
+import { AccessDeniedError } from '@/domain/errors';
 
 class HttpClientSpy implements HttpClient {
   url: string;
@@ -63,5 +69,14 @@ describe('RemoteUpdateTask', () => {
     const params = makeUpdateTaskParams();
     await sut.update(params);
     expect(httpClientSpy.body).toEqual(params);
+  });
+
+  it('should throw AccessDeniedError if HttpClient returns 403', async () => {
+    const { sut, httpClientSpy } = makeSut();
+    httpClientSpy.response = {
+      statusCode: HttpStatusCode.forbidden,
+    };
+    const loadAllPromise = sut.update(makeUpdateTaskParams());
+    await expect(loadAllPromise).rejects.toThrow(new AccessDeniedError());
   });
 });
