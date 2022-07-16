@@ -7,7 +7,7 @@ import {
   HttpStatusCode,
 } from '../contracts/http';
 import { RemoteUpdateTask } from './remote-update-task';
-import { AccessDeniedError } from '@/domain/errors';
+import { AccessDeniedError, UnexpectedError } from '@/domain/errors';
 
 class HttpClientSpy implements HttpClient {
   url: string;
@@ -78,5 +78,14 @@ describe('RemoteUpdateTask', () => {
     };
     const loadAllPromise = sut.update(makeUpdateTaskParams());
     await expect(loadAllPromise).rejects.toThrow(new AccessDeniedError());
+  });
+
+  it('should throw UnexpectedError if HttpClient returns another statusCode error', async () => {
+    const { sut, httpClientSpy } = makeSut();
+    httpClientSpy.response = {
+      statusCode: HttpStatusCode.serverError,
+    };
+    const loadAllPromise = sut.update(makeUpdateTaskParams());
+    await expect(loadAllPromise).rejects.toThrow(new UnexpectedError());
   });
 });
