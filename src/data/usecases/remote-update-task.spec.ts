@@ -51,4 +51,10 @@ describe('RemoteUpdateTask', () => {
     await sut.update(params);
     expect(httpClientSpy.url).toEqual(`${url}/${params.id}`);
   });
+
+  it('should call HttpClient with correct Method', async () => {
+    const { sut, httpClientSpy } = makeSut();
+    await sut.update(makeUpdateTaskParams());
+    expect(httpClientSpy.method).toEqual('PATCH');
+  });
 });
