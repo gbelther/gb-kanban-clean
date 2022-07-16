@@ -1,8 +1,13 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable no-plusplus */
 /* eslint-disable max-classes-per-file */
 import { screen, waitFor } from '@testing-library/react';
 import { faker } from '@faker-js/faker';
-import { LoadTaskList, LoadTaskStatusList } from '@/domain/usecases';
+import {
+  LoadTaskList,
+  LoadTaskStatusList,
+  UpdateTask,
+} from '@/domain/usecases';
 import { renderTheme } from '@/main/config/tests/renderTheme';
 import { Board } from '.';
 
@@ -36,6 +41,14 @@ const makeStatusList = (length: number = 3): LoadTaskStatusList.Model[] => {
   return statusList;
 };
 
+const makeUpdateTaskModel = (): UpdateTask.Model => ({
+  id: faker.datatype.uuid(),
+  title: faker.random.word(),
+  content: faker.random.words(),
+  statusId: faker.datatype.uuid(),
+  userId: faker.datatype.uuid(),
+});
+
 const statusListFake: LoadTaskStatusList.Model[] = makeStatusList();
 const taskListFake: LoadTaskList.Model[] = makeTaskList().map(task => ({
   ...task,
@@ -63,6 +76,16 @@ class LoadTaskStatusListSpy implements LoadTaskStatusList {
   }
 }
 
+class UpdateTaskSpy implements UpdateTask {
+  task = makeUpdateTaskModel();
+  callsCount: number = 0;
+
+  async update(data: UpdateTask.Params): Promise<UpdateTask.Model> {
+    this.callsCount++;
+    return this.task;
+  }
+}
+
 type SutTypes = {
   loadTaskListSpy: LoadTaskListSpy;
   loadTaskStatusListSpy: LoadTaskStatusListSpy;
@@ -71,10 +94,12 @@ type SutTypes = {
 const makeSut = (): SutTypes => {
   const loadTaskListSpy = new LoadTaskListSpy();
   const loadTaskStatusListSpy = new LoadTaskStatusListSpy();
+  const updateTaskSpy = new UpdateTaskSpy();
   renderTheme(
     <Board
       loadTaskList={loadTaskListSpy}
       loadTaskStatusList={loadTaskStatusListSpy}
+      updateTask={updateTaskSpy}
     />,
   );
   return {

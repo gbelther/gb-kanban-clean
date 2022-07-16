@@ -1,14 +1,23 @@
 import { useEffect, useState } from 'react';
-import { LoadTaskList, LoadTaskStatusList } from '@/domain/usecases';
+import {
+  LoadTaskList,
+  LoadTaskStatusList,
+  UpdateTask,
+} from '@/domain/usecases';
 import { TaskCard } from './components/task-card';
 import * as Sty from './styles';
 
 type BoardParams = {
   loadTaskList: LoadTaskList;
   loadTaskStatusList: LoadTaskStatusList;
+  updateTask: UpdateTask;
 };
 
-export function Board({ loadTaskList, loadTaskStatusList }: BoardParams) {
+export function Board({
+  loadTaskList,
+  loadTaskStatusList,
+  updateTask,
+}: BoardParams) {
   const [tasks, setTasks] = useState<LoadTaskList.Model[]>([]);
   const [statuses, setStatuses] = useState<LoadTaskStatusList.Model[]>([]);
 
