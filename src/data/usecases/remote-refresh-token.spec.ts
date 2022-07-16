@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker';
+import { UnexpectedError } from '@/domain/errors';
 import {
   HttpClient,
   HttpRequest,
@@ -77,5 +78,17 @@ describe('RemoteRefreshToken', () => {
       refreshToken: faker.datatype.uuid(),
     });
     expect(tokens).toEqual(returnData);
+  });
+
+  it('should return AccessToken and RefreshToken if HttpClient returns 200', async () => {
+    const { sut, httpClientSpy } = makeSut();
+    jest.spyOn(httpClientSpy, 'request').mockImplementationOnce(async () => ({
+      statusCode: HttpStatusCode.badRequest,
+      data: faker.random.words(),
+    }));
+    const promise = sut.refresh({
+      refreshToken: faker.datatype.uuid(),
+    });
+    await expect(promise).rejects.toThrow(new UnexpectedError());
   });
 });
