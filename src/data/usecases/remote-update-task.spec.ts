@@ -88,4 +88,15 @@ describe('RemoteUpdateTask', () => {
     const loadAllPromise = sut.update(makeUpdateTaskParams());
     await expect(loadAllPromise).rejects.toThrow(new UnexpectedError());
   });
+
+  it('should return a TaskModel if HttpClient returns 200', async () => {
+    const { sut, httpClientSpy } = makeSut();
+    const task = makeUpdateTaskParams();
+    httpClientSpy.response = {
+      statusCode: HttpStatusCode.success,
+      data: task,
+    };
+    const httpResponse = await sut.update(task);
+    expect(httpResponse).toEqual(task);
+  });
 });
