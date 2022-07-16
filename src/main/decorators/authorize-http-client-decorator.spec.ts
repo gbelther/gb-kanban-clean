@@ -1,15 +1,33 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable max-classes-per-file */
 import { faker } from '@faker-js/faker';
-import { GetStorage } from '@/data/contracts/cache';
-import { HttpClient, HttpRequest, HttpResponse } from '@/data/contracts/http';
+import { GetStorage, SetStorage } from '@/data/contracts/cache';
+import {
+  HttpClient,
+  HttpRequest,
+  HttpResponse,
+  HttpStatusCode,
+} from '@/data/contracts/http';
 import { AuthorizeHttpClientDecorator } from './authorize-http-client-decorator';
-import { Authentication } from '@/domain/usecases';
+import { Authentication, RefreshToken } from '@/domain/usecases';
+import { RefreshTokenModel } from '@/domain/models';
+import { AccessDeniedError } from '@/domain/errors';
 
 class GetStorageSpy implements GetStorage {
   key: string;
   value: any = JSON.parse(faker.datatype.json());
 
   get(key: string): any {
+    this.key = key;
+    return this.value;
+  }
+}
+
+class SetStorageSpy implements SetStorage {
+  key: string;
+  value: any = JSON.parse(faker.datatype.json());
+
+  set(key: string): any {
     this.key = key;
     return this.value;
   }
@@ -36,6 +54,18 @@ class HttpClientSpy implements HttpClient {
   }
 }
 
+class RefreshTokenSpy implements RefreshToken {
+  callsCount: number = 0;
+
+  async refresh(params: RefreshToken.Params): Promise<RefreshTokenModel> {
+    this.callsCount += 1;
+    return {
+      accessToken: faker.datatype.uuid(),
+      refreshToken: faker.datatype.uuid(),
+    };
+  }
+}
+
 const makeHttpRequest = (): HttpRequest => ({
   url: faker.internet.url(),
   method: faker.internet.httpMethod(),
@@ -56,16 +86,25 @@ type SutTypes = {
   sut: AuthorizeHttpClientDecorator;
   getStorageSpy: GetStorageSpy;
   httpClientSpy: HttpClientSpy;
+  refreshTokenSpy: RefreshTokenSpy;
 };
 
 const makeSut = (): SutTypes => {
   const getStorageSpy = new GetStorageSpy();
+  const setStorageSpy = new SetStorageSpy();
   const httpClientSpy = new HttpClientSpy();
-  const sut = new AuthorizeHttpClientDecorator(getStorageSpy, httpClientSpy);
+  const refreshTokenSpy = new RefreshTokenSpy();
+  const sut = new AuthorizeHttpClientDecorator(
+    getStorageSpy,
+    setStorageSpy,
+    httpClientSpy,
+    refreshTokenSpy,
+  );
   return {
     sut,
     getStorageSpy,
     httpClientSpy,
+    refreshTokenSpy,
   };
 };
 
@@ -122,5 +161,14 @@ describe('AuthorizeHttpClientDecorator', () => {
     const { sut, httpClientSpy } = makeSut();
     const httpResponse = await sut.request(makeHttpRequest());
     expect(httpResponse).toEqual(httpClientSpy.response);
+  });
+
+  it('should call RefreshToken if HttpClient returns 403', async () => {
+    const { sut, httpClientSpy, refreshTokenSpy } = makeSut();
+    httpClientSpy.response = {
+      statusCode: HttpStatusCode.forbidden,
+    };
+    await sut.request(makeHttpRequest());
+    expect(refreshTokenSpy.callsCount).toBe(1);
   });
 });
