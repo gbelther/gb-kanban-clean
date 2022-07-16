@@ -1,5 +1,5 @@
 import { RefreshToken } from '@/domain/usecases';
-import { HttpClient } from '../contracts/http';
+import { HttpClient, HttpStatusCode } from '../contracts/http';
 
 export class RemoteRefreshToken implements RefreshToken {
   constructor(
@@ -8,11 +8,16 @@ export class RemoteRefreshToken implements RefreshToken {
   ) {}
 
   async refresh(params: RefreshToken.Params): Promise<RefreshToken.Model> {
-    await this.httpClient.request({
+    const httpResponse = await this.httpClient.request({
       url: this.url,
       method: 'POST',
       body: params,
     });
-    return null;
+    switch (httpResponse.statusCode) {
+      case HttpStatusCode.success:
+        return httpResponse.data;
+      default:
+        return null;
+    }
   }
 }
