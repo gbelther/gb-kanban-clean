@@ -22,7 +22,10 @@ export function TaskCard({
         <Sty.Content>{content}</Sty.Content>
       </Sty.ContentBox>
       <Sty.Footer>
-        <Sty.ButtonChangeStatus onClick={onStatusLeftButton}>
+        <Sty.ButtonChangeStatus
+          data-testid="button-change-status"
+          onClick={onStatusLeftButton}
+        >
           <Sty.IconToLeft />
         </Sty.ButtonChangeStatus>
         <Sty.ButtonChangeStatus onClick={onStatusRightButton}>
