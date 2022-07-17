@@ -24,6 +24,28 @@ export function Board({
   const filterTasksByStatusId = (statusId: string) =>
     tasks.filter(task => task.statusId === statusId);
 
+  const handleStatusLeftChange = async (
+    taskId: string,
+    statusOrder: number,
+  ) => {
+    if (statusOrder === 0) return;
+    const statusByOrder = statuses.find(
+      status => status.order === statusOrder - 1,
+    );
+    await updateTask.update({ id: taskId, statusId: statusByOrder.id });
+  };
+
+  const handleStatusRightChange = async (
+    taskId: string,
+    statusOrder: number,
+  ) => {
+    if (statusOrder === statuses.length) return;
+    const statusByOrder = statuses.find(
+      status => status.order === statusOrder + 1,
+    );
+    await updateTask.update({ id: taskId, statusId: statusByOrder.id });
+  };
+
   useEffect(() => {
     loadTaskList.loadAll().then(taskList => setTasks(taskList));
 
@@ -51,8 +73,12 @@ export function Board({
                 key={task.id}
                 title={task.title}
                 content={task.content}
-                onStatusLeftButton={() => {}}
-                onStatusRightButton={() => {}}
+                onStatusLeftButton={() =>
+                  handleStatusLeftChange(task.id, status.order)
+                }
+                onStatusRightButton={() =>
+                  handleStatusRightChange(task.id, status.order)
+                }
               />
             ))}
           </Sty.TaskGroupContent>
