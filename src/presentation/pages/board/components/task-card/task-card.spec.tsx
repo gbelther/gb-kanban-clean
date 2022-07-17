@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react';
+import { fireEvent, screen } from '@testing-library/react';
 import { faker } from '@faker-js/faker';
 import { renderTheme } from '@/main/config/tests/renderTheme';
 import { TaskCard } from '.';
@@ -37,5 +37,13 @@ describe('<TaskCard />', () => {
     const content = faker.random.words();
     makeSut({ content });
     expect(screen.queryByText(content)).toBeTruthy();
+  });
+
+  it('should call onStatusLeftButton when click on the respective button', () => {
+    const onStatusLeftButton = jest.fn();
+    makeSut({ onStatusLeftButton });
+    const buttonLeft = screen.getByTestId('button-change-status');
+    fireEvent.click(buttonLeft);
+    expect(onStatusLeftButton).toHaveBeenCalled();
   });
 });
