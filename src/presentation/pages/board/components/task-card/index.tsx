@@ -3,9 +3,16 @@ import * as Sty from './styles';
 type TaskCardProps = {
   title: string;
   content: string;
+  onStatusLeftButton: () => void;
+  onStatusRightButton: () => void;
 };
 
-export function TaskCard({ title = '', content = '' }: TaskCardProps) {
+export function TaskCard({
+  title = '',
+  content = '',
+  onStatusLeftButton,
+  onStatusRightButton,
+}: TaskCardProps) {
   return (
     <Sty.Container data-testid="task-card">
       <Sty.Header>
@@ -14,6 +21,14 @@ export function TaskCard({ title = '', content = '' }: TaskCardProps) {
       <Sty.ContentBox>
         <Sty.Content>{content}</Sty.Content>
       </Sty.ContentBox>
+      <Sty.Footer>
+        <Sty.ButtonChangeStatus onClick={onStatusLeftButton}>
+          <Sty.IconToLeft />
+        </Sty.ButtonChangeStatus>
+        <Sty.ButtonChangeStatus onClick={onStatusRightButton}>
+          <Sty.IconToRight />
+        </Sty.ButtonChangeStatus>
+      </Sty.Footer>
     </Sty.Container>
   );
 }

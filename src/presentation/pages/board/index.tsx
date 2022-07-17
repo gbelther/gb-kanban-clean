@@ -51,6 +51,8 @@ export function Board({
                 key={task.id}
                 title={task.title}
                 content={task.content}
+                onStatusLeftButton={() => {}}
+                onStatusRightButton={() => {}}
               />
             ))}
           </Sty.TaskGroupContent>
