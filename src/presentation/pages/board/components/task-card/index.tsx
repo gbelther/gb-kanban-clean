@@ -23,12 +23,15 @@ export function TaskCard({
       </Sty.ContentBox>
       <Sty.Footer>
         <Sty.ButtonChangeStatus
-          data-testid="button-change-status"
+          data-testid="button-change-status-left"
           onClick={onStatusLeftButton}
         >
           <Sty.IconToLeft />
         </Sty.ButtonChangeStatus>
-        <Sty.ButtonChangeStatus onClick={onStatusRightButton}>
+        <Sty.ButtonChangeStatus
+          data-testid="button-change-status-right"
+          onClick={onStatusRightButton}
+        >
           <Sty.IconToRight />
         </Sty.ButtonChangeStatus>
       </Sty.Footer>
