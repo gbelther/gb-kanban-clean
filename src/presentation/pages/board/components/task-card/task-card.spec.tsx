@@ -42,8 +42,16 @@ describe('<TaskCard />', () => {
   it('should call onStatusLeftButton when click on the respective button', () => {
     const onStatusLeftButton = jest.fn();
     makeSut({ onStatusLeftButton });
-    const buttonLeft = screen.getByTestId('button-change-status');
+    const buttonLeft = screen.getByTestId('button-change-status-left');
     fireEvent.click(buttonLeft);
     expect(onStatusLeftButton).toHaveBeenCalled();
+  });
+
+  it('should call onStatusRightButton when click on the respective button', () => {
+    const onStatusRightButton = jest.fn();
+    makeSut({ onStatusRightButton });
+    const buttonLeft = screen.getByTestId('button-change-status-right');
+    fireEvent.click(buttonLeft);
+    expect(onStatusRightButton).toHaveBeenCalled();
   });
 });
