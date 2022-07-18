@@ -131,12 +131,17 @@ describe('<Board />', () => {
     });
   });
 
-  // it('should call loadTaskStatusList when the page loaded', async () => {
-  //   const { loadTaskStatusListSpy } = makeSut();
-  //   await waitFor(() => {
-  //     expect(loadTaskStatusListSpy.callsCount).toBe(1);
-  //   });
-  // });
+  it('should render tasks correctly', async () => {
+    const statusList = makeStatusList(2);
+    const taskList = [
+      { ...makeTask(), statusId: statusList[0].id },
+      { ...makeTask(), statusId: statusList[1].id },
+    ];
+    makeSut(statusList, taskList);
+    await waitFor(() => {
+      expect(screen.getAllByTestId('task-card')).toHaveLength(2);
+    });
+  });
 
   // it('should render statuses column when loadTaskStatusList returns statuses', async () => {
   //   makeSut();
