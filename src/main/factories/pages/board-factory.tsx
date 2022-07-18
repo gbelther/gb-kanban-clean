@@ -1,3 +1,5 @@
+import { TasksContextProvider } from '@/presentation/contexts/tasks-context';
+import { TaskStatusesContextProvider } from '@/presentation/contexts/tasks-status-context';
 import { Board } from '@/presentation/pages/board';
 import {
   makeRemoteLoadTaskList,
@@ -6,9 +8,18 @@ import {
 } from '../usecases';
 
 export const makeBoard = () => (
-  <Board
-    loadTaskList={makeRemoteLoadTaskList()}
+  <TaskStatusesContextProvider
     loadTaskStatusList={makeRemoteLoadTaskStatusList()}
-    updateTask={makeRemoteUpdateTask()}
-  />
+  >
+    <TasksContextProvider
+      loadTaskList={makeRemoteLoadTaskList()}
+      updateTask={makeRemoteUpdateTask()}
+    >
+      <Board
+        loadTaskList={makeRemoteLoadTaskList()}
+        loadTaskStatusList={makeRemoteLoadTaskStatusList()}
+        updateTask={makeRemoteUpdateTask()}
+      />
+    </TasksContextProvider>
+  </TaskStatusesContextProvider>
 );

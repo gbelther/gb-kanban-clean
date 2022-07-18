@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react';
 import {
   LoadTaskList,
   LoadTaskStatusList,
   UpdateTask,
 } from '@/domain/usecases';
 import { TaskCard } from './components/task-card';
+import { useTasks } from '@/presentation/contexts/tasks-context';
+import { useTaskStatuses } from '@/presentation/contexts/tasks-status-context';
 import * as Sty from './styles';
 
 type BoardParams = {
@@ -18,8 +19,8 @@ export function Board({
   loadTaskStatusList,
   updateTask,
 }: BoardParams) {
-  const [tasks, setTasks] = useState<LoadTaskList.Model[]>([]);
-  const [statuses, setStatuses] = useState<LoadTaskStatusList.Model[]>([]);
+  const { statusList: statuses } = useTaskStatuses();
+  const { taskList: tasks, changeTaskStatus } = useTasks();
 
   const filterTasksByStatusId = (statusId: string) =>
     tasks.filter(task => task.statusId === statusId);
@@ -32,7 +33,7 @@ export function Board({
     const statusByOrder = statuses.find(
       status => status.order === statusOrder - 1,
     );
-    await updateTask.update({ id: taskId, statusId: statusByOrder.id });
+    changeTaskStatus({ taskId, statusId: statusByOrder.id });
   };
 
   const handleStatusRightChange = async (
@@ -43,22 +44,8 @@ export function Board({
     const statusByOrder = statuses.find(
       status => status.order === statusOrder + 1,
     );
-    await updateTask.update({ id: taskId, statusId: statusByOrder.id });
+    changeTaskStatus({ taskId, statusId: statusByOrder.id });
   };
-
-  useEffect(() => {
-    loadTaskList.loadAll().then(taskList => setTasks(taskList));
-
-    loadTaskStatusList.loadAll().then(statusList =>
-      setStatuses(
-        statusList.sort((a, b) => {
-          if (a.order > b.order) return 1;
-          if (a.order < b.order) return -1;
-          return 0;
-        }),
-      ),
-    );
-  }, []);
 
   return (
     <Sty.Container>
