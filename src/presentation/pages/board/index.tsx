@@ -1,24 +1,9 @@
-import {
-  LoadTaskList,
-  LoadTaskStatusList,
-  UpdateTask,
-} from '@/domain/usecases';
 import { TaskCard } from './components/task-card';
 import { useTasks } from '@/presentation/contexts/tasks-context';
 import { useTaskStatuses } from '@/presentation/contexts/tasks-status-context';
 import * as Sty from './styles';
 
-type BoardParams = {
-  loadTaskList: LoadTaskList;
-  loadTaskStatusList: LoadTaskStatusList;
-  updateTask: UpdateTask;
-};
-
-export function Board({
-  loadTaskList,
-  loadTaskStatusList,
-  updateTask,
-}: BoardParams) {
+export function Board() {
   const { statusList: statuses } = useTaskStatuses();
   const { taskList: tasks, changeTaskStatus } = useTasks();
 

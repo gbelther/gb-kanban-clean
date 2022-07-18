@@ -15,11 +15,7 @@ export const makeBoard = () => (
       loadTaskList={makeRemoteLoadTaskList()}
       updateTask={makeRemoteUpdateTask()}
     >
-      <Board
-        loadTaskList={makeRemoteLoadTaskList()}
-        loadTaskStatusList={makeRemoteLoadTaskStatusList()}
-        updateTask={makeRemoteUpdateTask()}
-      />
+      <Board />
     </TasksContextProvider>
   </TaskStatusesContextProvider>
 );

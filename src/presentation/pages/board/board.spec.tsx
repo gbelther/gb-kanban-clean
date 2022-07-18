@@ -44,80 +44,14 @@ const makeStatusList = (length: number = 3): LoadTaskStatusList.Model[] => {
   return statusList;
 };
 
-const makeUpdateTaskModel = (): UpdateTask.Model => ({
-  id: faker.datatype.uuid(),
-  title: faker.random.word(),
-  content: faker.random.words(),
-  statusId: faker.datatype.uuid(),
-  userId: faker.datatype.uuid(),
-});
-
-const statusListFake: LoadTaskStatusList.Model[] = makeStatusList();
-const taskListFake: LoadTaskList.Model[] = makeTaskList().map(task => ({
-  ...task,
-  statusId:
-    statusListFake[Math.floor(Math.random() * statusListFake.length)].id,
-}));
-
-class LoadTaskListSpy implements LoadTaskList {
-  taskList = taskListFake;
-  callsCount: number = 0;
-
-  async loadAll(): Promise<LoadTaskList.Model[]> {
-    this.callsCount++;
-    return this.taskList;
-  }
-}
-
-class LoadTaskStatusListSpy implements LoadTaskStatusList {
-  statusList = statusListFake;
-  callsCount: number = 0;
-
-  async loadAll(): Promise<LoadTaskStatusList.Model[]> {
-    this.callsCount++;
-    return this.statusList;
-  }
-}
-
-class UpdateTaskSpy implements UpdateTask {
-  task = makeUpdateTaskModel();
-  callsCount: number = 0;
-
-  async update(data: UpdateTask.Params): Promise<UpdateTask.Model> {
-    this.callsCount++;
-    return this.task;
-  }
-}
-
-type SutTypes = {
-  loadTaskListSpy: LoadTaskListSpy;
-  loadTaskStatusListSpy: LoadTaskStatusListSpy;
-};
-
-const makeSut = (
-  statusList = makeStatusList(),
-  taskList = makeTaskList(),
-): SutTypes => {
-  const loadTaskListSpy = new LoadTaskListSpy();
-  const loadTaskStatusListSpy = new LoadTaskStatusListSpy();
-  const updateTaskSpy = new UpdateTaskSpy();
-
+const makeSut = (statusList = makeStatusList(), taskList = makeTaskList()) => {
   renderTheme(
     <TaskStatusesContext.Provider value={{ statusList }}>
       <TasksContext.Provider value={{ taskList, changeTaskStatus: jest.fn() }}>
-        <Board
-          loadTaskList={loadTaskListSpy}
-          loadTaskStatusList={loadTaskStatusListSpy}
-          updateTask={updateTaskSpy}
-        />
-        ,
+        <Board />,
       </TasksContext.Provider>
     </TaskStatusesContext.Provider>,
   );
-  return {
-    loadTaskListSpy,
-    loadTaskStatusListSpy,
-  };
 };
 
 describe('<Board />', () => {
@@ -142,16 +76,4 @@ describe('<Board />', () => {
       expect(screen.getAllByTestId('task-card')).toHaveLength(2);
     });
   });
-
-  // it('should render statuses column when loadTaskStatusList returns statuses', async () => {
-  //   makeSut();
-  //   const statusColumns = await screen.findAllByTestId('status-column');
-  //   expect(statusColumns.length).toBeGreaterThanOrEqual(1);
-  // });
-
-  // it('should render tasks cards when loadTaskList returns tasks', async () => {
-  //   makeSut();
-  //   const tasks = await screen.findAllByTestId('task-card');
-  //   expect(tasks.length).toBeGreaterThanOrEqual(1);
-  // });
 });
