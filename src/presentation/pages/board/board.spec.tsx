@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-no-constructed-context-values */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable no-plusplus */
 /* eslint-disable max-classes-per-file */
@@ -10,6 +11,8 @@ import {
 } from '@/domain/usecases';
 import { renderTheme } from '@/main/config/tests/renderTheme';
 import { Board } from '.';
+import { TaskStatusesContext } from '@/presentation/contexts/tasks-status-context';
+import { TasksContext } from '@/presentation/contexts/tasks-context';
 
 const makeTask = (): LoadTaskList.Model => ({
   id: faker.datatype.uuid(),
@@ -91,16 +94,25 @@ type SutTypes = {
   loadTaskStatusListSpy: LoadTaskStatusListSpy;
 };
 
-const makeSut = (): SutTypes => {
+const makeSut = (
+  statusList = makeStatusList(),
+  taskList = makeTaskList(),
+): SutTypes => {
   const loadTaskListSpy = new LoadTaskListSpy();
   const loadTaskStatusListSpy = new LoadTaskStatusListSpy();
   const updateTaskSpy = new UpdateTaskSpy();
+
   renderTheme(
-    <Board
-      loadTaskList={loadTaskListSpy}
-      loadTaskStatusList={loadTaskStatusListSpy}
-      updateTask={updateTaskSpy}
-    />,
+    <TaskStatusesContext.Provider value={{ statusList }}>
+      <TasksContext.Provider value={{ taskList, changeTaskStatus: jest.fn() }}>
+        <Board
+          loadTaskList={loadTaskListSpy}
+          loadTaskStatusList={loadTaskStatusListSpy}
+          updateTask={updateTaskSpy}
+        />
+        ,
+      </TasksContext.Provider>
+    </TaskStatusesContext.Provider>,
   );
   return {
     loadTaskListSpy,
@@ -109,29 +121,32 @@ const makeSut = (): SutTypes => {
 };
 
 describe('<Board />', () => {
-  it('should call loadTaskList when the page loaded', async () => {
-    const { loadTaskListSpy } = makeSut();
+  it('should render statuses correctly', async () => {
+    const statusList = makeStatusList(2);
+    makeSut(statusList);
     await waitFor(() => {
-      expect(loadTaskListSpy.callsCount).toBe(1);
+      expect(screen.getAllByTestId('status-column')).toHaveLength(2);
+      expect(screen.queryByText(statusList[0].name)).toBeTruthy();
+      expect(screen.queryByText(statusList[1].name)).toBeTruthy();
     });
   });
 
-  it('should call loadTaskStatusList when the page loaded', async () => {
-    const { loadTaskStatusListSpy } = makeSut();
-    await waitFor(() => {
-      expect(loadTaskStatusListSpy.callsCount).toBe(1);
-    });
-  });
+  // it('should call loadTaskStatusList when the page loaded', async () => {
+  //   const { loadTaskStatusListSpy } = makeSut();
+  //   await waitFor(() => {
+  //     expect(loadTaskStatusListSpy.callsCount).toBe(1);
+  //   });
+  // });
 
-  it('should render statuses column when loadTaskStatusList returns statuses', async () => {
-    makeSut();
-    const statusColumns = await screen.findAllByTestId('status-column');
-    expect(statusColumns.length).toBeGreaterThanOrEqual(1);
-  });
+  // it('should render statuses column when loadTaskStatusList returns statuses', async () => {
+  //   makeSut();
+  //   const statusColumns = await screen.findAllByTestId('status-column');
+  //   expect(statusColumns.length).toBeGreaterThanOrEqual(1);
+  // });
 
-  it('should render tasks cards when loadTaskList returns tasks', async () => {
-    makeSut();
-    const tasks = await screen.findAllByTestId('task-card');
-    expect(tasks.length).toBeGreaterThanOrEqual(1);
-  });
+  // it('should render tasks cards when loadTaskList returns tasks', async () => {
+  //   makeSut();
+  //   const tasks = await screen.findAllByTestId('task-card');
+  //   expect(tasks.length).toBeGreaterThanOrEqual(1);
+  // });
 });

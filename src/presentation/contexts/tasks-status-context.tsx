@@ -11,7 +11,7 @@ type TaskStatusesContextProviderProps = {
   loadTaskStatusList: LoadTaskStatusList;
 };
 
-const TaskStatusesContext = createContext<TaskStatusesContextData>(null);
+export const TaskStatusesContext = createContext<TaskStatusesContextData>(null);
 
 export function TaskStatusesContextProvider({
   children,

@@ -24,7 +24,7 @@ type TasksContextProviderProps = {
   updateTask: UpdateTask;
 };
 
-const TasksContext = createContext<TasksContextData>(null);
+export const TasksContext = createContext<TasksContextData>(null);
 
 export function TasksContextProvider({
   children,
