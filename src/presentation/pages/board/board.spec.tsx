@@ -104,4 +104,24 @@ describe('<Board />', () => {
       expect(changeTaskStatus).toHaveBeenCalled();
     });
   });
+
+  it('should not call changeTaskStatus if the status task is the last and the click is to right', async () => {
+    const statusList = makeStatusList(3);
+    const taskList = [{ ...makeTask(), statusId: statusList[2].id }];
+    const { changeTaskStatus } = makeSut(statusList, taskList);
+    fireEvent.click(screen.getByTestId('button-change-status-right'));
+    await waitFor(() => {
+      expect(changeTaskStatus).not.toHaveBeenCalled();
+    });
+  });
+
+  it('should call changeTaskStatus if the status task is not the last and the click is to right', async () => {
+    const statusList = makeStatusList(3);
+    const taskList = [{ ...makeTask(), statusId: statusList[1].id }];
+    const { changeTaskStatus } = makeSut(statusList, taskList);
+    fireEvent.click(screen.getByTestId('button-change-status-right'));
+    await waitFor(() => {
+      expect(changeTaskStatus).toHaveBeenCalled();
+    });
+  });
 });
