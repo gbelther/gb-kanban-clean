@@ -14,7 +14,7 @@ export function Board() {
     taskId: string,
     statusOrder: number,
   ) => {
-    if (statusOrder === 0) return;
+    if (statusOrder === 1) return;
     const statusByOrder = statuses.find(
       status => status.order === statusOrder - 1,
     );
