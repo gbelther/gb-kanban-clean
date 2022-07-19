@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable no-plusplus */
 /* eslint-disable max-classes-per-file */
-import { screen, waitFor } from '@testing-library/react';
+import { fireEvent, screen, waitFor } from '@testing-library/react';
 import { faker } from '@faker-js/faker';
 import {
   LoadTaskList,
@@ -44,14 +44,22 @@ const makeStatusList = (length: number = 3): LoadTaskStatusList.Model[] => {
   return statusList;
 };
 
+type SutTypes = {
+  changeTaskStatus: jest.Mock;
+};
+
 const makeSut = (statusList = makeStatusList(), taskList = makeTaskList()) => {
+  const changeTaskStatus = jest.fn();
   renderTheme(
     <TaskStatusesContext.Provider value={{ statusList }}>
-      <TasksContext.Provider value={{ taskList, changeTaskStatus: jest.fn() }}>
+      <TasksContext.Provider value={{ taskList, changeTaskStatus }}>
         <Board />,
       </TasksContext.Provider>
     </TaskStatusesContext.Provider>,
   );
+  return {
+    changeTaskStatus,
+  };
 };
 
 describe('<Board />', () => {
@@ -74,6 +82,26 @@ describe('<Board />', () => {
     makeSut(statusList, taskList);
     await waitFor(() => {
       expect(screen.getAllByTestId('task-card')).toHaveLength(2);
+    });
+  });
+
+  it('should not call changeTaskStatus if the status task is the first and the click is to left', async () => {
+    const statusList = makeStatusList(3);
+    const taskList = [{ ...makeTask(), statusId: statusList[0].id }];
+    const { changeTaskStatus } = makeSut(statusList, taskList);
+    fireEvent.click(screen.getByTestId('button-change-status-left'));
+    await waitFor(() => {
+      expect(changeTaskStatus).not.toHaveBeenCalled();
+    });
+  });
+
+  it('should call changeTaskStatus if the status task is not the first and the click is to left', async () => {
+    const statusList = makeStatusList(3);
+    const taskList = [{ ...makeTask(), statusId: statusList[1].id }];
+    const { changeTaskStatus } = makeSut(statusList, taskList);
+    fireEvent.click(screen.getByTestId('button-change-status-left'));
+    await waitFor(() => {
+      expect(changeTaskStatus).toHaveBeenCalled();
     });
   });
 });
